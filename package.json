@@ -1,0 +1,28 @@
+{
+  "name": "node_ded",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "connect-flash": "^0.1.1",
+    "connect-redis": "^3.1.0",
+    "consolidate": "^0.14.1",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "express-session": "^1.14.1",
+    "hamljs": "^0.6.2",
+    "passport": "^0.3.2",
+    "passport-facebook": "^2.1.1",
+    "passport-local": "^1.0.0",
+    "reveal": "0.0.4",
+    "socket.io": "^1.4.8",
+    "striptags": "^2.1.1",
+    "swig": "^1.4.2"
+  }
+}

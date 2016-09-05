@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Caldrivers.com - Free driving school</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Gloria+Hallelujah' rel='stylesheet' type='text/css'>
+        <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/assets/css/main.css" />
+        <style>
+            html {
+            background: url(/assets/img/main_background.jpg) no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size:cover;
+            font-family: arial;
+            color:white;
+            }
+
+        @media (min-width: 769px) {
+            body {
+                background-color:rgba(0,0,0,0.0);
+                margin-top:5%;
+            }
+        }
+            @media (max-width: 768px) {
+                body {
+                    margin-top:25%;
+                    background-color:rgba(0,0,0,0.0);
+                }
+            }
+
+            .question { color:white; font-size: 2em; }
+            .answer {color:#b09256; font-size:1.2em;}
+
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a href="/" class="navbar-brand" id="main-logo">Caldrivers.com</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#">{{ email }}</a></li>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/status">Get Started</a></li>
+                        <li><a href="/about">About</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div id="container" style="background-color:rgba(64,64,64,0.8)">
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                    <span class="prev"><a style="text-decoration:none;border-radius:25px;background-color:rgba(0,0,0,0.5);padding-left:10px;padding-right:10px;font-size:4em;color:#b09256;" href="/lesson/{% if unit == 69 %}11{% else %}{{ unit }}{% endif%}">Back</a></span>
+                </div>
+                <div class="col-sm-4"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                </div>
+                <div class="col-sm-4"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                    <h2 style="color:#b09256">{% if unit==69 %}Final Exam{% else %}Quiz Unit: {{ unit }}{% endif %}</h2>
+                </div>
+                <div class="col-sm-4"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                    {% for question in quiz %}
+                        {% set nq = loop.index %}
+                        <div>
+                            <div class="question" id="question_{{ question.question_id }}">
+                                {{ nq }}. {{ question.question }}
+                            </div>
+                            {% for answer in question.answers %}
+                                <div class="answer" id="{{question.question_id}}_{{answer.answer_id}}">
+                                    <input type="radio" name="question_{{ question.question_id}}" value="{{question.question_id}},{{answer.answer_id}}" />{{ answer.answer }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="col-sm-4"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-2">
+                    <button id="submit_button">Check Answers</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                <div id="wrong" style="font-size:2em;color:red"></div>
+                </div>
+                <div class="col-sm-4"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                <div id="next_go" style="visibility:hidden;font-size:2em;color:#00ff00">
+                    <div>
+                            All correct.  Move onto the next unit?
+                    </div>
+                    <div>
+                        <button id="go_next">Continue</button>
+                    </div>
+                </div>
+                <div class="col-sm-4"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                <div id="warning_div" style="color:red;background-color:white;font-size:2em;"></div>
+                </div>
+                <div class="col-sm-4"></div>
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+
+                $('#go_next').click(function(data) {
+                    window.location = {% if unit == 69 %}'/lesson/congrats';{% else %} '/lesson/{{next_unit}}';{% endif %}
+                });
+
+                $('#submit_button').click(function(data) {
+                    var answers = [];
+                    var validate = 0;
+                    var wrong = 0;
+                    var is_final = {% if unit==69 %} 1 {% else %} 0 {% endif %};
+                    $('#warning_div').html('');
+                    $('input:checked').each(function(data) {
+                        answers.push($(this).val());
+                        validate++;
+                    });
+                    if (validate == {{ nq }} ) {
+                        $.post('/api/checkAnswers',
+                            {
+                                answers: JSON.stringify(answers),
+                                is_final: is_final,
+                                unit: {{ unit }}
+                            }, function(data) {
+                                $('#outer_div input').css('color','black');
+                                $('.question').css('color','#00ff00');
+                                for (var key in data) {
+                                    $('#question_'+key).css('color','red');
+                                    wrong++;
+                                }
+                                if (wrong>0) {
+                                    console.log('fail');
+                                    $('#wrong').text(wrong+' incorect answers.  All answers must be green to continue.  Please choose the correct answers.');
+                                } else {
+                                    if (is_final) {
+                                        window.location = '/lesson/congrats';
+                                    } else {
+                                        $('#wrong').hide();
+                                        $('#next_go').css('visibility','visible');
+                                    }
+                                }
+                            },'json'
+                        );
+                    } else {
+                        $('#warning_div').html('Please answer all questions');
+                        $('#warning_div').show();
+                    }
+                });
+            });
+        </script>
+        <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+    </body>
+</html>
