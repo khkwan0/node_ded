@@ -26,7 +26,7 @@ app.use(session({
                 }),
                 resave: false,
                 saveUninitialized: false,
-                secret: 'KiN-1BdHf#r?a=t4'}));
+                secret: config.session.secret}));
 app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
               extended: true
@@ -208,11 +208,11 @@ app.get('/lesson/:unit', function(req, res) {
         issues = {};
         redis_client.get('unit'+unit, function(err, data) {
             if (err) {
-                res.render('/status.html', {'email':req.user.email});
+                res.render('status.html', {'email':req.user.email});
             } else if (!data) {
                 fs.readFile('lib/unit'+unit+'.js', 'utf8', function(err, data)  {
                     if (err) {
-                        res.render('/status.html', {'email':req.user.email});
+                        res.render('status.html', {'email':req.user.email});
                     } else {
                         issues = JSON.parse(data);
                         for (i in issues) {
@@ -252,7 +252,7 @@ app.get('/quiz/:unit', function(req, res) {
         }
         redis_client.get('quiz'+unit, function(err, data) {
             if (err) {
-                res.render('/status.html', {'email':req.user.email});
+                res.render('status.html', {'email':req.user.email});
             } else if (!data) {
                 fs.readFile('lib/quiz'+unit+'.js', 'utf8', function(err, data) {
                     if (err) {
@@ -279,7 +279,7 @@ app.post('/api/checkAnswers', function(req, res) {
     quiz = [];
     redis_client.get('quiz'+unit, function(err, data) {
         if (err) {
-            res.render('/status.html', {'email':req.user.email});
+            res.render('status.html', {'email':req.user.email});
         } else if (!data) {
             fs.readFile('lib/quiz'+unit+'.js', 'utf8', function(err, data) {
                 if (err) {
