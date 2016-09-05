@@ -1,0 +1,82 @@
+body {
+    /*
+    background: url(/assets/img/main_background.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size:cover;
+    */
+}
+
+video#bgvid { 
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -100;
+    -ms-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+/*    background: url('../img/main_background.jpg') no-repeat;*/
+    background-size: cover; 
+}
+
+@media screen and (max-device-width: 800px) {
+    body {
+        background: url('../img/main_background.jpg') #000 no-repeat center center fixed;
+    }
+    #bgvid {
+        display: none;
+    }
+}
+#main-logo {
+    font-family: 'Gloria Hallelujah', cursive; 
+    font-size:2em;
+    color:white;
+}
+
+#motto {
+    font-family: 'Gloria Hallelujah', cursive; 
+    font-size:1em;
+    color: #eeeeee;
+}
+
+#menu {
+    font-family: 'Gloria Hallelujah', cursive; 
+    float:right;
+    font-size:1em;
+    color: #eeeeee;
+    width:20%;
+}
+
+#about {
+    margin-right:20%;
+}
+
+a {
+    text-decoration:none;
+    color:#dddddd;
+}
+
+a:hover {
+      text-decoration:none;
+  }
+
+.get_started {
+    font-family: 'Gloria Hallelujah', cursive; 
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+/*background-color: rgba(138,192,7,0.8);*/
+      background-color: rgba(0,0,0,0.8);
+      padding-left:2%;
+      padding-right:2%;
+      padding-bottom:1%;
+      border-radius:25px;
+color:black;
+}
