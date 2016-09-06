@@ -259,24 +259,29 @@ app.get('/quiz/:unit', function(req, res) {
             next_unit = 69;
             unit = 69;
         }
-        lib_client.get('quiz'+unit, function(err, data) {
-            if (err) {
-                res.render('status.html', {'email':req.user.email});
-            } else if (!data) {
-                fs.readFile('lib/quiz'+unit+'.js', 'utf8', function(err, data) {
-                    if (err) {
-                        throw(err);
-                    } else {
-                        quiz = JSON.parse(data);
-                        lib_client.set('quiz'+unit, data);
-                        res.render('quiz.html', {'quiz':quiz,'email':req.user.email,'unit':unit,'next_unit':next_unit});
-                    }
-                });
-            } else {
-                quiz = JSON.parse(data);
-                res.render('quiz.html', {'quiz':quiz,'email':req.user.email,'unit':unit,'next_unit':next_unit});
-            }
-        });
+        try {
+            lib_client.get('quiz'+unit, function(err, data) {
+                if (err) {
+                    res.render('status.html', {'email':req.user.email});
+                } else if (!data) {
+                    fs.readFile('lib/quiz'+unit+'.js', 'utf8', function(err, data) {
+                        if (err) {
+                            throw(err);
+                        } else {
+                            quiz = JSON.parse(data);
+                            lib_client.set('quiz'+unit, data);
+                            res.render('quiz.html', {'quiz':quiz,'email':req.user.email,'unit':unit,'next_unit':next_unit});
+                        }
+                    });
+                } else {
+                    quiz = JSON.parse(data);
+                    res.render('quiz.html', {'quiz':quiz,'email':req.user.email,'unit':unit,'next_unit':next_unit});
+                }
+            });
+        } catch(e) {
+            console.log(e);
+            res.status(404);
+        }
     } else {
         res.redirect('/login');
     }
@@ -351,6 +356,9 @@ app.post('/save_shipping', function(req, res) {
 });
 
 app.get('/billing', function(req, res) {
+    if (typeof req.user.purchase !== 'undefined' && req.user.email!='khkwan0@gmail.com') {
+        res.render('congrats.html', {'email':req.user.email});
+    }
     if (typeof req.user.pass_final!=='undefined' && req.user.pass_final) {
         shipping = req.user.shipping;
         res.render('billing.html', {'email':req.user.email,'shipping':shipping});
@@ -384,6 +392,9 @@ app.post('/save_billing', function(req, res) {
 });
 
 app.get('/final_verify', function(req, res) {
+    if (typeof req.user.purchase !== 'undefined' && req.user.email !== 'khkwan0@gmail.com') {
+        res.render('congrats.html',{'email':req.user.email});
+    }
     if (req.user.pass_final && req.user.billing && req.user.shipping && req.user.cc) {
         res.render('final_verify.html', { 'email':req.user.email,'shipping':req.user.shipping,'billing':req.user.billing,'cc':req.user.cc});
     } else {
@@ -392,7 +403,7 @@ app.get('/final_verify', function(req, res) {
 });
 
 app.post('/do_purchase', function(req, reso) {
-    if (req.user.pass_final && req.user.billing && req.user.shipping && req.user.cc) {
+    if (req.user.pass_final && req.user.billing && req.user.shipping && req.user.cc && req.user.purchase === 'undefined') {
         var base_price = 45.00;
         var shipping_cost = 4.99;
         if (req.user.billing.expedite) {
