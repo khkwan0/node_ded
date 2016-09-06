@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "authorizenet": "^1.0.0",
     "body-parser": "^1.15.2",
     "connect-flash": "^0.1.1",
     "connect-redis": "^3.1.0",
@@ -23,6 +24,8 @@
     "reveal": "0.0.4",
     "socket.io": "^1.4.8",
     "striptags": "^2.1.1",
-    "swig": "^1.4.2"
+    "swig": "^1.4.2",
+    "uuid": "^2.0.2",
+    "xml2js": "^0.4.17"
   }
 }

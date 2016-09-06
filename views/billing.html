@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Caldrivers.com - Free driving school{{ title }}</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Gloria+Hallelujah' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" href="/assets/css/main.css" />
+        <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/assets/js/creditcardjs/creditcardjs-v0.10.13.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/assets/reveal/css/theme/moon.css" />
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a href="/" class="navbar-brand" id="main-logo">Caldrivers.com</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse" style="font-family: Arial">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#">{{ email }}</a></li>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/disclaimer">Get Started</a></li>
+                        <li><a href="/about">About</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div style="padding-top:65px;font-family:Arial;color:#eee8d5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div>
+                        Ship to:<br />
+                        {{ shipping.name }}<br />
+                        {{ shipping.addy1}}{{ shipping.addy2}}<br />
+                        {{ shipping.city}}<br />
+                        {{ shipping.state}}<br />
+                        {{ shipping.zip}}<br />
+                        </div>
+                        <div>
+                            <h3>Billing info:</h3>    
+                            <form action="saveBilling()">
+                                <div class="form-group row">
+                                    <label for="example-text-input" class="col-xs-4 col-form-label">Name</label>
+                                     <div class="col-xs-6">
+                                        <input class="form-control" type="text" value="{{ shipping.name }}"id="name_input">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="example-text-input" class="col-xs-4 col-form-label">Address</label>
+                                     <div class="col-xs-6">
+                                        <input class="form-control" type="text" value="{{ shipping.addy1 }}" id="addy1_input">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="example-text-input" class="col-xs-4 col-form-label">Address  2(optional)</label>
+                                     <div class="col-xs-6">
+                                        <input class="form-control" type="text" value="{{ shipping.addy2 }}"id="addy2_input">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="example-text-input" class="col-xs-4 col-form-label">City</label>
+                                     <div class="col-xs-6">
+                                        <input class="form-control" type="text" value="{{ shipping.city }}" id="city_input">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="example-text-input" class="col-xs-4 col-form-label">State</label>
+                                     <div class="col-xs-6">
+                                        <input class="form-control" type="text" value="{{ shipping.state }}" id="state_input">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="example-text-input" class="col-xs-4 col-form-label">Zip</label>
+                                     <div class="col-xs-6">
+                                        <input class="form-control" type="text" value="{{ shipping.zip }}" id="zip_input">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div style="font-weight:bold;font-size:2em;" id="error_div">
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <h3>Invoice</h3>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr><td>Exam review and certificate</td><td id="test_cost">45.99</td>
+                                <tr class="standard"><td>Standard shipping and handling</td><td id="shipping_cost">4.00</td>
+                                <tr class="expedited" style="display:none"><td>Expedited shipping and handling</td><td id="expedited_cost">14.00</td>
+                                <tr class="standard"><td>Total</td><td id="shipping_cost">49.99</td>
+                                <tr class="expedited" style="display:none"><td>Total</td><td id="expedited_shipping_cost">59.99</td>
+                            </table>
+                        </div>
+                        <h3 class="secondary">
+                        <input type="checkbox" unchecked id="expedite_box" />
+                        I'd like to skip others who are waiting for their exam validation and shipment.  I want to be first in line.</h3>
+                        <h3>Credit Card Info</h3>
+                        <div>
+                            <img style="height:50px" src="/assets/img/AcceptMarks_3.jpg" />
+                        </div>
+                        <div class="ccjs-card">
+                          <label class="ccjs-number">
+                            Card Number
+                            <input id="card_number" name="card-number" class="ccjs-number" placeholder="•••• •••• •••• ••••">
+                          </label>
+
+                          <label class="ccjs-csc">
+                            Security Code
+                            <input id="csc" name="csc" class="ccjs-csc" placeholder="•••">
+                          </label>
+
+                          <button type="button" class="ccjs-csc-help">?</button>
+
+                          <label class="ccjs-name">
+                            Name on Card
+                            <input id="cc_name" name="name" class="ccjs-name">
+                          </label>
+
+                          <fieldset class="ccjs-expiration">
+                            <legend>Expiration</legend>
+                            <select id="month" name="month" class="ccjs-month">
+                              <option selected disabled>MM</option>
+                              <option value="01">01</option>
+                              <option value="02">02</option>
+                              <option value="03">03</option>
+                              <option value="04">04</option>
+                              <option value="05">05</option>
+                              <option value="06">06</option>
+                              <option value="07">07</option>
+                              <option value="08">08</option>
+                              <option value="09">09</option>
+                              <option value="10">10</option>
+                              <option value="11">11</option>
+                              <option value="12">12</option>
+                            </select>
+
+                            <select id="year" name="year" class="ccjs-year">
+                              <option selected disabled>YY</option>
+                              <option value="14">14</option>
+                              <option value="15">15</option>
+                              <option value="16">16</option>
+                              <option value="17">17</option>
+                              <option value="18">18</option>
+                              <option value="19">19</option>
+                              <option value="20">20</option>
+                              <option value="21">21</option>
+                              <option value="22">22</option>
+                              <option value="23">23</option>
+                              <option value="24">24</option>
+                            </select>
+                          </fieldset>
+
+                          <select name="card-type" class="ccjs-hidden-card-type">
+                            <option value="amex" class="ccjs-amex">American Express</option>
+                            <option value="discover" class="ccjs-discover">Discover</option>
+                            <option value="mastercard" class="ccjs-mastercard">MasterCard</option>
+                            <option value="visa" class="ccjs-visa">Visa</option>
+                            <!--<option value="diners-club" class="ccjs-diners-club">Diners Club</option>-->
+                            <!--<option value="jcb" class="ccjs-jcb">JCB</option>-->
+                            <!--<option value="laser" class="laser">Laser</option>-->
+                            <!--<option value="maestro" class="maestro">Maestro</option>-->
+                            <!--<option value="unionpay" class="unionpay">UnionPay</option>-->
+                            <!--<option value="visa-electron" class="visa-electron">Visa Electron</option>-->
+                            <!--<option value="dankort" class="dankort">Dankort</option>-->
+                          </select>
+                        </div>
+                        <div style="display:none" id="save_button" ><button class="btn btn-primary" onClick="saveBilling()" id="go">Next</button></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3"></div>
+                    <div class="col-xs-6"><h2>Your card will not be charged until you confirm the final details on the next page</h2></div>
+                    <div class="col-xs-3"></div>
+                </div>
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/assets/js/creditcardjs/creditcardjs-v0.10.13.min.js"></script>
+        <script>
+            creditcardjs.onValidityChange(function(isValid) {
+                if (isValid) {
+                    $('#save_button').show();
+                } else {
+                    $('#save_button').hide();
+                }
+            }); 
+
+            $(function() {
+                $('#expedite_box').click(function(data) {
+                    if ($(this).prop('checked')) {
+                        $('.standard').hide();
+                        $('.expedited').show();
+                    } else {
+                        $('.standard').show();
+                        $('.expedited').hide();
+                    }
+                });
+            });
+
+
+            function saveBilling() {
+                billing= {};
+                cc = {};
+                billing.name = $('#name_input').val();   
+                billing.addy1 = $('#addy1_input').val();
+                billing.addy2 = $('#addy2_input').val();
+                billing.city = $('#city_input').val();
+                billing.state = $('#state_input').val();
+                billing.zip = $('#zip_input').val();
+                cc.cc_no = $('#card_number').val();
+                cc.csc = $('#csc').val();
+                cc.month = $('#month').val();
+                cc.year = $('#year').val();
+                cc.cc_name = $('#cc_name').val();
+                if ($('#expedite_box').prop('checked')) {
+                    billing.expedite = 1;
+                } else {
+                    billing.expedite = 0;
+                }
+                if (!billing.name || !billing.addy1 || !billing.city || !billing.state || !billing.zip) {
+                    $('#error_div').text('Form not complete.');
+                    console.log(shipping);
+                    $('#error_div').show(); 
+                } else {
+                    console.log(billing);
+                    $.post('/save_billing', {'billing':JSON.stringify(billing), 'cc':JSON.stringify(cc)},
+                        function(rv) {
+                            if (rv.valid) {
+                                window.location = '/final_verify';
+                            } else {
+                                $('#error_div').text(rv.err);
+                                $('#error_div').show(); 
+                            }
+                        },'json'
+                    );
+                }
+            };
+        </script>
+    </body>
+</html>
