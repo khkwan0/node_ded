@@ -48,6 +48,16 @@
         <script src="/assets/reveal/js/reveal.js"></script>
         <script>
             Reveal.initialize({history:true});
+            Reveal.addEventListener('slidechanged', function(event) {
+                state = Reveal.getState();
+                state.unit = {{ unit }};
+                $.post('/save_state', 
+                    {
+                        'state':JSON.stringify(state)
+                    },function(data) {
+                    }
+                );
+            });
         </script>
     </body>
 </html>

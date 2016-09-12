@@ -192,7 +192,7 @@ app.post('/register', passport.authenticate('local-register', {
 
 app.get('/status', function(req, res) {
     if (req.user) {
-        res.render('status.html', {'email':req.user.email});
+        res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state});
     } else {
         res.redirect('login');
     }
@@ -301,6 +301,16 @@ app.get('/quiz/:unit', function(req, res) {
     } else {
         res.redirect('/login');
     }
+});
+
+app.post('/save_state', function(req, res) {
+    try {
+        req.user.reveal_state = req.body.state;
+        res.send('ok');
+    } catch(e) {
+        console.log(e);
+    }
+
 });
 
 app.post('/api/checkAnswers', function(req, res) {

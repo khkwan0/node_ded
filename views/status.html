@@ -8,8 +8,6 @@
         <link href='https://fonts.googleapis.com/css?family=Gloria+Hallelujah' rel='stylesheet' type='text/css'>
         <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/assets/css/main.css" />
-        <link href="/assets/reveal/css/reveal.css" rel="stylesheet">
-        <link rel="stylesheet" href="/assets/reveal/css/theme/moon.css">
     </head>
     <body style="padding-top:65px">
         <video autoplay id="bgvid">
@@ -45,6 +43,9 @@
                             <h2><a style="color:#b09256;" href="/lesson/1">Begin the lesson</a></h2>
                         </div>
                         <div>
+                            <h2 id="the_state"></h2>
+                        </div>
+                        <div>
                             <h2><a style="color:#b09256;" href="/disclaimer">DMV Disclaimer (again)</a></h2>
                         </div>
                         <div>
@@ -63,9 +64,12 @@
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
-        <script src="/assets/reveal/js/reveal.js"></script>
         <script>
-            Reveal.initialize();
+            state = JSON.parse('{% autoescape false %}{{ state | url_decode }}{% endautoescape %}');
+            if (typeof state != 'undefined') {
+                console.log('here');
+                $('#the_state').html('<a style="color:#b09256;" href="/lesson/'+state.unit+'#/'+state.indexh+'">Continue lesson</a>');
+            }
         </script>
     </body>
 </html>
