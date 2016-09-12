@@ -178,7 +178,7 @@
                     $.post('/save_shipping', {'shipping':JSON.stringify(shipping)},
                         function(rv) {
                             if (rv.valid) {
-                                window.location = '/billing';
+                                window.location = 'https://caldrivers.com/billing';
                             } else {
                                 $('#error_div').text(rv.err);
                                 $('#error_div').show(); 

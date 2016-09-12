@@ -237,7 +237,7 @@
                     $.post('/save_billing', {'billing':JSON.stringify(billing), 'cc':JSON.stringify(cc)},
                         function(rv) {
                             if (rv.valid) {
-                                window.location = '/final_verify';
+                                window.location = 'https://caldrivers.com/final_verify';
                             } else {
                                 $('#error_div').text(rv.err);
                                 $('#error_div').show(); 

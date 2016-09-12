@@ -488,7 +488,9 @@ app.post('/do_purchase', function(req, reso) {
         post_req.write(post_data);
         post_req.end();
     } else {
-        res.status(404);
+        rv = {};
+        rv.error = 'No shipping? No Billing?  Didn\'t finish? Already purchased?';
+        reso.send(JSON.stringify(rv));
     }
 });
 
