@@ -5,6 +5,7 @@ var cons = require('consolidate');
 var passport = require('passport'),
     FacebookStrategy = require('passport-facebook').Strategy,
     GoogleStrategy = require('passport-google-oauth20').Strategy,
+    TwitterStrategy = require('passport-twitter').Strategy,
     LocalStrategy = require('passport-local').Strategy;
 var app = express();
 var RedisStore = require('connect-redis')(session);
@@ -100,8 +101,8 @@ passport.use(new GoogleStrategy({
                 if (typeof user.profile === 'undefined') {
                     user.profile = {};
                 }
-                if (typeof user.profile.fb === 'undefined') {
-                    user.profile.fb = profile;
+                if (typeof user.profile.google === 'undefined') {
+                    user.profile.google = profile;
                 }
                 redis_client.set(email, JSON.stringify(user), function(err) {
                     if (err) {
@@ -126,6 +127,47 @@ passport.use(new GoogleStrategy({
     }
 ));
 
+passport.use(new TwitterStrategy({
+        consumerKey: config.twitter.consumerKey,
+        consumerSecret: config.twitter.consumerSecret,
+        callbackURL: "https://caldrivers.com/auth/twitter/callback"
+    },
+    function (successToken, refreshToken, profile, done) {
+        email = profile.displayName,
+        redis_client.get(email, function(err, data) {
+            if (err) {
+                return done(err);
+            }
+            if (data) {
+                user = JSON.parse(data);
+                if (typeof user.profile === 'undefined') {
+                    user.profile = {};
+                }
+                if (typeof user.profile.twitter === 'undefined') {
+                    user.profile.twitter = profile;
+                }
+                redis_client.set(email, JSON.stringify(user), function(err) {
+                    if (err) {
+                        throw(err);
+                    }
+                    done(null, user);
+                });
+            } else { 
+                var new_user = {
+                    'email': email,
+                    'datetime': Date.now() ,
+                    'profile': {twitter:profile}
+                }
+                redis_client.set(email, JSON.stringify(new_user), function(err) {
+                    if (err) {
+                        throw(err);
+                    }
+                    return done(null, new_user);
+                });
+            }
+        });
+    }
+));
 passport.use('local-register', new LocalStrategy({
                 usernameField : 'email',
                 passwordField : 'password',
@@ -260,6 +302,7 @@ app.get('/overview', function(req, res) {
 
 app.get('/auth/facebook', passport.authenticate('facebook', {scope: 'email'}));
 app.get('/auth/google', passport.authenticate('google', {scope: 'email'}));
+app.get('/auth/twitter', passport.authenticate('twitter', {scope: 'email'}));
 app.post('/auth/local', passport.authenticate('local-login',
             {
                 successRedirect: '/status',
@@ -273,6 +316,11 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook', {
 }));
 
 app.get('/auth/google/callback', passport.authenticate('google', {
+    successRedirect: '/status',
+    failureRedirect: '/login'
+}));
+
+app.get('/auth/twitter/callback', passport.authenticate('twitter', {
     successRedirect: '/status',
     failureRedirect: '/login'
 }));
