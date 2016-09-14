@@ -4,6 +4,7 @@ var cookieParser = require('cookie-parser');
 var cons = require('consolidate');
 var passport = require('passport'),
     FacebookStrategy = require('passport-facebook').Strategy,
+    GoogleStrategy = require('passport-google-oauth20').Strategy,
     LocalStrategy = require('passport-local').Strategy;
 var app = express();
 var RedisStore = require('connect-redis')(session);
@@ -43,7 +44,7 @@ app.use(flash());
 passport.use(new FacebookStrategy({
             clientID: config.facebook.clientID,
             clientSecret: config.facebook.clientSecret,
-            callbackURL: 'http://caldrivers.com:8080/auth/facebook/callback',
+            callbackURL: 'https://caldrivers.com/auth/facebook/callback',
             profileFields: ['id', 'photos', 'emails']
         },
         function (successToken, refreshToken, profile, done) {
@@ -82,6 +83,49 @@ passport.use(new FacebookStrategy({
             });
         }
 ));
+
+passport.use(new GoogleStrategy({
+        clientID: config.google.clientID,
+        clientSecret: config.google.clientSecret,
+        callbackURL: "https://caldrivers.com/auth/google/callback"
+    },
+    function (successToken, refreshToken, profile, done) {
+        email = profile.emails[0].value;
+        redis_client.get(email, function(err, data) {
+            if (err) {
+                return done(err);
+            }
+            if (data) {
+                user = JSON.parse(data);
+                if (typeof user.profile === 'undefined') {
+                    user.profile = {};
+                }
+                if (typeof user.profile.fb === 'undefined') {
+                    user.profile.fb = profile;
+                }
+                redis_client.set(email, JSON.stringify(user), function(err) {
+                    if (err) {
+                        throw(err);
+                    }
+                    done(null, user);
+                });
+            } else { 
+                var new_user = {
+                    'email': email,
+                    'datetime': Date.now() ,
+                    'profile': {google:profile}
+                }
+                redis_client.set(email, JSON.stringify(new_user), function(err) {
+                    if (err) {
+                        throw(err);
+                    }
+                    return done(null, new_user);
+                });
+            }
+        });
+    }
+));
+
 passport.use('local-register', new LocalStrategy({
                 usernameField : 'email',
                 passwordField : 'password',
@@ -215,6 +259,7 @@ app.get('/overview', function(req, res) {
 });
 
 app.get('/auth/facebook', passport.authenticate('facebook', {scope: 'email'}));
+app.get('/auth/google', passport.authenticate('google', {scope: 'email'}));
 app.post('/auth/local', passport.authenticate('local-login',
             {
                 successRedirect: '/status',
@@ -223,6 +268,11 @@ app.post('/auth/local', passport.authenticate('local-login',
             }));
 
 app.get('/auth/facebook/callback', passport.authenticate('facebook', {
+    successRedirect: '/status',
+    failureRedirect: '/login'
+}));
+
+app.get('/auth/google/callback', passport.authenticate('google', {
     successRedirect: '/status',
     failureRedirect: '/login'
 }));
@@ -296,7 +346,7 @@ app.get('/quiz/:unit', function(req, res) {
             });
         } catch(e) {
             console.log(e);
-            res.status(404);
+            res.status(404).send('404');;
         }
     } else {
         res.redirect('/login');
@@ -306,6 +356,7 @@ app.get('/quiz/:unit', function(req, res) {
 app.post('/save_state', function(req, res) {
     try {
         req.user.reveal_state = req.body.state;
+        redis_client.set(req.user.email, JSON.stringify(req.user));
         res.send('ok');
     } catch(e) {
         console.log(e);
@@ -343,10 +394,10 @@ app.post('/api/checkAnswers', function(req, res) {
 });
 
 app.get('/congrats', function(req, res) {
-    if (req.user.pass_final) {
+    if (typeof req.user !=='undefined' && typeof req.user.pass_final !== 'undefined' && req.user.pass_final) {
         res.render('congrats.html', {'email':req.user.email});
     } else {
-        res.status(404);
+        res.status(404).send('404');
     }
 });
 
@@ -382,15 +433,14 @@ app.post('/save_shipping', function(req, res) {
 });
 
 app.get('/billing', function(req, res) {
-    if (typeof req.user.purchase !== 'undefined' && req.user.email!='khkwan0@gmail.com') {
+    if (typeof req.user !== 'undefined' && typeof req.user.purchase !== 'undefined' && req.user.email!='khkwan0@gmail.com') {
         res.render('congrats.html', {'email':req.user.email});
     }
-    if (typeof req.user.pass_final!=='undefined' && req.user.pass_final) {
+    if (typeof req.user !== 'undefined' && req.user.pass_final!=='undefined' && req.user.pass_final) {
         shipping = req.user.shipping;
         res.render('billing.html', {'email':req.user.email,'shipping':shipping});
-    } else {
-        res.status(404);
     }
+    res.status(404).send('404');
 });
 
 app.post('/save_billing', function(req, res) {

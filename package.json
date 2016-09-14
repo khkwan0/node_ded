@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/khkwan0/jsmud.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,6 +24,7 @@
     "hamljs": "^0.6.2",
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
+    "passport-google-oauth20": "^1.0.0",
     "passport-local": "^1.0.0",
     "reveal": "0.0.4",
     "socket.io": "^1.4.8",
