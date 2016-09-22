@@ -46,7 +46,7 @@ video#bgvid {
 }
 
 #menu {
-    font-family: 'Gloria Hallelujah', cursive; 
+    font-family: Arial, Sans Serif, Helvetica;
     float:right;
     font-size:1em;
     color: #eeeeee;
@@ -67,7 +67,8 @@ a:hover {
   }
 
 .get_started {
-    font-family: 'Gloria Hallelujah', cursive; 
+/*    font-family: 'Gloria Hallelujah', cursive; */
+    font-family: Arial, Sans Serif, Helvetica;
 position:absolute;
 top:50%;
 left:50%;
