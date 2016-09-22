@@ -41,8 +41,8 @@
         </nav>
         <div class="container">
             <div class="row">
-                <div class="col-sm-3"></div>
-                <div class="col-sm-3">
+                <div class="col-md-4"></div>
+                <div class="col-md-2">
                     <div>
                         <!-- FACEBOOK -->
                         <a href="/auth/facebook">
@@ -61,7 +61,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-sm-3">
+                <div class="col-md-2">
                     <div>
                         <!-- TWITTER -->
                         <a href="/auth/twitter">
@@ -75,7 +75,7 @@
                         </a>
                     </div>
                 </div>
-                <div class="col-sm-3"></div>
+                <div class="col-md-4"></div>
             </div>
             <div class="row">
                 <div class="col-sm-4"></div>
@@ -94,75 +94,7 @@
                 <div class="col-sm-4"></div>
             </div>
         </div>
-                    <!--
-                <section>
-                    <div>
-                        <form class="form-signing" action="/register" method="post">
-                            <label for="inputEmail" class="sr-only">Email address</label>
-                            <input type="email" name="email" id="reg_email" class="form-control" placeholder="Email address" required autofocus>
-                            <label for="inputPassword" class="sr-only">Password</label>
-                            <input type="password" name="password" id="reg_password" class="form-control" placeholder="Password" required>
-                            <label for="confirmPassword" class="sr-only">Confirm Password</label>
-                            <input type="password" id="confirm_password" class="form-control" placeholder="ConfirmPassword" required>
-                            <button class="btn btn-lg btn-primary btn-block" id="register" type="submit">Register</button>
-                        </form>
-                    </div>
-                    <div>
-                        <button class="btn btn-lg btn-primary btn-block" onClick="Reveal.left()">Back to Login</button>
-                    </div>
-                    <div id="status_box" style="background-color:rgba(0,0,0,0.5);display:none">
-                        
-                    </div>
-                </section>
-                -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-        <script src="assets/reveal/js/reveal.js"></script>
-        <script>
-        </script>
-        <script>
-            $(document).ready(function() {
-/*
-                $('#register').click(function(data) {
-                    $('#status_box').hide();
-                    var email = $('#reg_email').val();
-                    var password = $('#reg_password').val();
-                    var confirm_password = $('#confirm_password').val();
-                    var valid = true;
-                    if (!ValidateEmail(email)) {
-                        $('#status_box').text('Invalid email address.  Please check.');
-                        $('#status_box').show();
-                        valid = false;
-                    }
-                    if (password !== confirm_password) {
-                        $('#status_box').text('Passwords do not match.  Please try again.');
-                        $('#status_box').show();
-                        valid = false;
-                    }
-
-                    if (valid) {
-                        $.post('/register',
-                            {
-                                email: email,
-                                password: password
-                            },
-                            function(data) {
-                            }, 'json'
-                        );
-                    }
-
-                    console.log(email);
-                });
-*/
-                Reveal.initialize({parallaxBackgroundImage:'assets/img/main_background.jpg',maxScale:'1.0',minScale:'0.2',width:480,height:350,progress:false});
-            });
-
-            function ValidateEmail(mail) {
-                if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail))  {  
-                    return (true)  
-                }  
-                return (false)  
-            } 
-        </script>
     </body>
 </html>
