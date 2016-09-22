@@ -1,0 +1,545 @@
+.social {
+    background-image: url(spritesheet.png);
+    background-repeat: no-repeat;
+    display: block;
+}
+
+.social-addthis-dreamstale01 {
+    width: 48px;
+    height: 48px;
+    background-position: -2px -2px;
+}
+
+.social-amazon-dreamstale02 {
+    width: 48px;
+    height: 48px;
+    background-position: -54px -2px;
+}
+
+.social-android-dreamstale03 {
+    width: 48px;
+    height: 48px;
+    background-position: -106px -2px;
+}
+
+.social-aol-dreamstale04 {
+    width: 48px;
+    height: 48px;
+    background-position: -158px -2px;
+}
+
+.social-apple-dreamstale05 {
+    width: 48px;
+    height: 48px;
+    background-position: -210px -2px;
+}
+
+.social-appstore-dreamstale06 {
+    width: 48px;
+    height: 48px;
+    background-position: -262px -2px;
+}
+
+.social-ask-dreamstale07 {
+    width: 48px;
+    height: 48px;
+    background-position: -314px -2px;
+}
+
+.social-badoo-dreamstale08 {
+    width: 48px;
+    height: 48px;
+    background-position: -366px -2px;
+}
+
+.social-bebo-dreamstale09 {
+    width: 48px;
+    height: 48px;
+    background-position: -418px -2px;
+}
+
+.social-behance-dreamstale10 {
+    width: 48px;
+    height: 48px;
+    background-position: -2px -54px;
+}
+
+.social-bing-dreamstale11 {
+    width: 48px;
+    height: 48px;
+    background-position: -54px -54px;
+}
+
+.social-blogger-dreamstale12 {
+    width: 48px;
+    height: 48px;
+    background-position: -106px -54px;
+}
+
+.social-chrome-dreamstale13 {
+    width: 48px;
+    height: 48px;
+    background-position: -158px -54px;
+}
+
+.social-delicious-dreamstale14 {
+    width: 48px;
+    height: 48px;
+    background-position: -210px -54px;
+}
+
+.social-deviantart-dreamstale15 {
+    width: 48px;
+    height: 48px;
+    background-position: -262px -54px;
+}
+
+.social-digg-dreamstale16 {
+    width: 48px;
+    height: 48px;
+    background-position: -314px -54px;
+}
+
+.social-diigo-dreamstale17 {
+    width: 48px;
+    height: 48px;
+    background-position: -366px -54px;
+}
+
+.social-dribbble-dreamstale18 {
+    width: 48px;
+    height: 48px;
+    background-position: -418px -54px;
+}
+
+.social-drive-dreamstale19 {
+    width: 48px;
+    height: 48px;
+    background-position: -2px -106px;
+}
+
+.social-dropbox-dreamstale20 {
+    width: 48px;
+    height: 48px;
+    background-position: -54px -106px;
+}
+
+.social-drupal-dreamstale21 {
+    width: 48px;
+    height: 48px;
+    background-position: -106px -106px;
+}
+
+.social-envato-dreamstale22 {
+    width: 48px;
+    height: 48px;
+    background-position: -158px -106px;
+}
+
+.social-etsy-dreamstale23 {
+    width: 48px;
+    height: 48px;
+    background-position: -210px -106px;
+}
+
+.social-evernote-dreamstale24 {
+    width: 48px;
+    height: 48px;
+    background-position: -262px -106px;
+}
+
+.social-facebook-dreamstale25 {
+    width: 48px;
+    height: 48px;
+    background-position: -314px -106px;
+}
+
+.social-fav-dreamstale26 {
+    width: 48px;
+    height: 48px;
+    background-position: -366px -106px;
+}
+
+.social-feed-dreamstale27 {
+    width: 48px;
+    height: 48px;
+    background-position: -418px -106px;
+}
+
+.social-feedburner-dreamstale28 {
+    width: 48px;
+    height: 48px;
+    background-position: -2px -158px;
+}
+
+.social-fiverr-dreamstale29 {
+    width: 48px;
+    height: 48px;
+    background-position: -54px -158px;
+}
+
+.social-flickr-dreamstale30 {
+    width: 48px;
+    height: 48px;
+    background-position: -106px -158px;
+}
+
+.social-formspring-dreamstale31 {
+    width: 48px;
+    height: 48px;
+    background-position: -158px -158px;
+}
+
+.social-forrst-dreamstale32 {
+    width: 48px;
+    height: 48px;
+    background-position: -210px -158px;
+}
+
+.social-friendfeed-dreamstale33 {
+    width: 48px;
+    height: 48px;
+    background-position: -262px -158px;
+}
+
+.social-getpocket-dreamstale34 {
+    width: 48px;
+    height: 48px;
+    background-position: -314px -158px;
+}
+
+.social-github2-dreamstale35 {
+    width: 48px;
+    height: 48px;
+    background-position: -366px -158px;
+}
+
+.social-google-dreamstale37 {
+    width: 48px;
+    height: 48px;
+    background-position: -418px -158px;
+}
+
+.social-google2-dreamstale38 {
+    width: 48px;
+    height: 48px;
+    background-position: -2px -210px;
+}
+
+.social-google_-dreamstale36 {
+    width: 48px;
+    height: 48px;
+    background-position: -54px -210px;
+}
+
+.social-hi5-dreamstale39 {
+    width: 48px;
+    height: 48px;
+    background-position: -106px -210px;
+}
+
+.social-html5-dreamstale40 {
+    width: 48px;
+    height: 48px;
+    background-position: -158px -210px;
+}
+
+.social-icq-dreamstale41 {
+    width: 48px;
+    height: 48px;
+    background-position: -210px -210px;
+}
+
+.social-imdb-dreamstale42 {
+    width: 48px;
+    height: 48px;
+    background-position: -262px -210px;
+}
+
+.social-instagram-dreamstale43 {
+    width: 48px;
+    height: 48px;
+    background-position: -314px -210px;
+}
+
+.social-lastfm-dreamstale44 {
+    width: 48px;
+    height: 48px;
+    background-position: -366px -210px;
+}
+
+.social-linkedin-dreamstale45 {
+    width: 48px;
+    height: 48px;
+    background-position: -418px -210px;
+}
+
+.social-livejournal-dreamstale46 {
+    width: 48px;
+    height: 48px;
+    background-position: -2px -262px;
+}
+
+.social-mail-dreamstale47 {
+    width: 48px;
+    height: 48px;
+    background-position: -54px -262px;
+}
+
+.social-metacafe-dreamstale48 {
+    width: 48px;
+    height: 48px;
+    background-position: -106px -262px;
+}
+
+.social-msn-dreamstale49 {
+    width: 48px;
+    height: 48px;
+    background-position: -158px -262px;
+}
+
+.social-myspace1-dreamstale50 {
+    width: 48px;
+    height: 48px;
+    background-position: -210px -262px;
+}
+
+.social-myspace2-dreamstale51 {
+    width: 48px;
+    height: 48px;
+    background-position: -262px -262px;
+}
+
+.social-newsvine-dreamstale52 {
+    width: 48px;
+    height: 48px;
+    background-position: -314px -262px;
+}
+
+.social-overflow-dreamstale53 {
+    width: 48px;
+    height: 48px;
+    background-position: -366px -262px;
+}
+
+.social-paypal-dreamstale54 {
+    width: 48px;
+    height: 48px;
+    background-position: -418px -262px;
+}
+
+.social-photobucket-dreamstale55 {
+    width: 48px;
+    height: 48px;
+    background-position: -2px -314px;
+}
+
+.social-picasa-dreamstale56 {
+    width: 48px;
+    height: 48px;
+    background-position: -54px -314px;
+}
+
+.social-pinterest-dreamstale57 {
+    width: 48px;
+    height: 48px;
+    background-position: -106px -314px;
+}
+
+.social-quora-dreamstale58 {
+    width: 48px;
+    height: 48px;
+    background-position: -158px -314px;
+}
+
+.social-reddit-dreamstale59 {
+    width: 48px;
+    height: 48px;
+    background-position: -210px -314px;
+}
+
+.social-share-dreamstale60 {
+    width: 48px;
+    height: 48px;
+    background-position: -262px -314px;
+}
+
+.social-skype-dreamstale61 {
+    width: 48px;
+    height: 48px;
+    background-position: -314px -314px;
+}
+
+.social-snapchat-dreamstale62 {
+    width: 48px;
+    height: 48px;
+    background-position: -366px -314px;
+}
+
+.social-soundcloud-dreamstale63 {
+    width: 48px;
+    height: 48px;
+    background-position: -418px -314px;
+}
+
+.social-squidoo-dreamstale64 {
+    width: 48px;
+    height: 48px;
+    background-position: -2px -366px;
+}
+
+.social-steam-dreamstale65 {
+    width: 48px;
+    height: 48px;
+    background-position: -54px -366px;
+}
+
+.social-stumbleupon-dreamstale66 {
+    width: 48px;
+    height: 48px;
+    background-position: -106px -366px;
+}
+
+.social-techcrunch-dreamstale67 {
+    width: 48px;
+    height: 48px;
+    background-position: -158px -366px;
+}
+
+.social-technorati-dreamstale68 {
+    width: 48px;
+    height: 48px;
+    background-position: -210px -366px;
+}
+
+.social-tripadvisor-dreamstale69 {
+    width: 48px;
+    height: 48px;
+    background-position: -262px -366px;
+}
+
+.social-tumblr-dreamstale70 {
+    width: 48px;
+    height: 48px;
+    background-position: -314px -366px;
+}
+
+.social-twitter-dreamstale71 {
+    width: 48px;
+    height: 48px;
+    background-position: -366px -366px;
+}
+
+.social-twitter2-dreamstale72 {
+    width: 48px;
+    height: 48px;
+    background-position: -418px -366px;
+}
+
+.social-viber-dreamstale73 {
+    width: 48px;
+    height: 48px;
+    background-position: -2px -418px;
+}
+
+.social-vimeo-dreamstale74 {
+    width: 48px;
+    height: 48px;
+    background-position: -54px -418px;
+}
+
+.social-whatsapp-dreamstale75 {
+    width: 48px;
+    height: 48px;
+    background-position: -106px -418px;
+}
+
+.social-wikipedia-dreamstale76 {
+    width: 48px;
+    height: 48px;
+    background-position: -158px -418px;
+}
+
+.social-windows-dreamstale78 {
+    width: 48px;
+    height: 48px;
+    background-position: -210px -418px;
+}
+
+.social-windows-store-dreamstale77 {
+    width: 48px;
+    height: 48px;
+    background-position: -262px -418px;
+}
+
+.social-windows8-dreamstale79 {
+    width: 48px;
+    height: 48px;
+    background-position: -314px -418px;
+}
+
+.social-wordpress-dreamstale80 {
+    width: 48px;
+    height: 48px;
+    background-position: -366px -418px;
+}
+
+.social-xbox-dreamstale81 {
+    width: 48px;
+    height: 48px;
+    background-position: -418px -418px;
+}
+
+.social-xing-dreamstale82 {
+    width: 48px;
+    height: 48px;
+    background-position: -470px -2px;
+}
+
+.social-yahoo-dreamstale84 {
+    width: 48px;
+    height: 48px;
+    background-position: -470px -54px;
+}
+
+.social-yahoo-messenger-dreamstale83 {
+    width: 48px;
+    height: 48px;
+    background-position: -470px -106px;
+}
+
+.social-yelp-dreamstale85 {
+    width: 48px;
+    height: 48px;
+    background-position: -470px -158px;
+}
+
+.social-youtube-dreamstale86 {
+    width: 48px;
+    height: 48px;
+    background-position: -470px -210px;
+}
+
+.social-youtube2-dreamstale87 {
+    width: 48px;
+    height: 48px;
+    background-position: -470px -262px;
+}
+
+.social-zoosk-dreamstale88 {
+    width: 48px;
+    height: 48px;
+    background-position: -470px -314px;
+}
+
+.social-zootool-dreamstale89 {
+    width: 48px;
+    height: 48px;
+    background-position: -470px -366px;
+}
+
+.social-zynga-dreamstale90 {
+    width: 48px;
+    height: 48px;
+    background-position: -470px -418px;
+}

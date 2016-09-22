@@ -6,7 +6,9 @@ var passport = require('passport'),
     FacebookStrategy = require('passport-facebook').Strategy,
     GoogleStrategy = require('passport-google-oauth20').Strategy,
     TwitterStrategy = require('passport-twitter').Strategy,
-    LocalStrategy = require('passport-local').Strategy;
+    LocalStrategy = require('passport-local').Strategy,
+    SteamStrategy = require('passport-steam').Strategy,
+    WindowsLiveStrategy = require('passport-windowslive').Strategy;
 var app = express();
 var RedisStore = require('connect-redis')(session);
 var bodyParser = require('body-parser');
@@ -168,6 +170,91 @@ passport.use(new TwitterStrategy({
         });
     }
 ));
+
+passport.use(new SteamStrategy({
+    returnURL: 'https://caldrivers.com/auth/steam/callback',
+    realm: 'https://caldrivers.com',
+    apiKey: config.steam.steamKey
+    },
+    function(identifier, profile, done) {
+        email = profile.displayName
+        redis_client.get(email, function(err, data) {
+            if (err) {
+                return done(err);
+            }
+            if (data) {
+                user = JSON.parse(data);
+                if (typeof user.profile === 'undefined') {
+                    user.profile = {};
+                }
+                if (typeof user.profile.twitter === 'undefined') {
+                    user.profile.steam = profile;
+                }
+                redis_client.set(email, JSON.stringify(user), function(err) {
+                    if (err) {
+                        throw(err);
+                    }
+                    done(null, user);
+                });
+            } else { 
+                var new_user = {
+                    'email': email,
+                    'datetime': Date.now() ,
+                    'profile': {steam:profile}
+                }
+                redis_client.set(email, JSON.stringify(new_user), function(err) {
+                    if (err) {
+                        throw(err);
+                    }
+                    return done(null, new_user);
+                });
+            }
+        });
+    }
+));
+
+passport.use(new WindowsLiveStrategy({
+        clientID: config.windowslive.clientID,
+        clientSecret: config.windowslive.password,
+        callbackURL: "https://caldrivers.com/auth/windowslive/callback"
+    },
+    function(accessToken, refreshToken, profile, done) {
+        email = profile.displayName
+        redis_client.get(email, function(err, data) {
+            if (err) {
+                return done(err);
+            }
+            if (data) {
+                user = JSON.parse(data);
+                if (typeof user.profile === 'undefined') {
+                    user.profile = {};
+                }
+                if (typeof user.profile.twitter === 'undefined') {
+                    user.profile.windowslive= profile;
+                }
+                redis_client.set(email, JSON.stringify(user), function(err) {
+                    if (err) {
+                        throw(err);
+                    }
+                    done(null, user);
+                });
+            } else { 
+                var new_user = {
+                    'email': email,
+                    'datetime': Date.now() ,
+                    'profile': {windowslive:profile}
+                }
+                redis_client.set(email, JSON.stringify(new_user), function(err) {
+                    if (err) {
+                        throw(err);
+                    }
+                    return done(null, new_user);
+                });
+            }
+        });
+    }
+));
+
 passport.use('local-register', new LocalStrategy({
                 usernameField : 'email',
                 passwordField : 'password',
@@ -261,6 +348,10 @@ app.get('/login', function(req, res) {
     }
 });
 
+app.get('/register', function(req, res) {
+    res.render('register.html');
+});
+
 app.get('/logout', function(req, res) {
     req.session.destroy(function(err) {
         if (err) {
@@ -303,6 +394,8 @@ app.get('/overview', function(req, res) {
 app.get('/auth/facebook', passport.authenticate('facebook', {scope: 'email'}));
 app.get('/auth/google', passport.authenticate('google', {scope: 'email'}));
 app.get('/auth/twitter', passport.authenticate('twitter', {scope: 'email'}));
+app.get('/auth/steam', passport.authenticate('steam', {scope: 'email'}));
+app.get('/auth/windowslive', passport.authenticate('windowslive', {scope: ['wl.signin', 'wl.basic']}));
 app.post('/auth/local', passport.authenticate('local-login',
             {
                 successRedirect: '/status',
@@ -321,6 +414,16 @@ app.get('/auth/google/callback', passport.authenticate('google', {
 }));
 
 app.get('/auth/twitter/callback', passport.authenticate('twitter', {
+    successRedirect: '/status',
+    failureRedirect: '/login'
+}));
+
+app.get('/auth/steam/callback', passport.authenticate('steam', {
+    successRedirect: '/status',
+    failureRedirect: '/login'
+}));
+
+app.get('/auth/windowslive/callback', passport.authenticate('windowslive', {
     successRedirect: '/status',
     failureRedirect: '/login'
 }));

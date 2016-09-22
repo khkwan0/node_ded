@@ -1,0 +1,108 @@
+<html>
+    <head>
+        <title>Caldrivers.com - Free driving school</title>
+        <link rel="stylesheet" href="/assets/css/sc-btn.css" />
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Gloria+Hallelujah' rel='stylesheet' type='text/css'>
+        <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="assets/css/about.css" />
+        <link rel="stylesheet" href="assets/reveal/css/reveal.css">
+        <link rel="stylesheet" href="assets/reveal/css/theme/moon.css">
+        <style>
+            .sm_signin_button {
+                height:45px;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-static-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a href="/" class="navbar-brand" id="main-logo">Caldrivers.com</a><span class="navbar-brand" id="motto">&nbsp;- California&apos;s free online driving school</span></span>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse" style="font-family:Arial">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/lesson">Get Started</a></li>
+                        <li><a href="/about">About</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div>
+                    <form class="form-signing" action="/register" method="post">
+                        <label for="inputEmail" class="sr-only">Email address</label>
+                        <input type="email" name="email" id="reg_email" class="form-control" placeholder="Email address" required autofocus>
+                        <label for="inputPassword" class="sr-only">Password</label>
+                        <input type="password" name="password" id="reg_password" class="form-control" placeholder="Password" required>
+                        <label for="confirmPassword" class="sr-only">Confirm Password</label>
+                        <input type="password" id="confirm_password" class="form-control" placeholder="ConfirmPassword" required>
+                        <button class="btn btn-lg btn-primary btn-block" id="register" type="submit">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-lg btn-primary btn-block" onClick="window.location='/login'">Back to Login</button>
+        </div>
+        <div id="status_box" style="background-color:rgba(0,0,0,0.5);display:none">
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+        <script>
+            $(document).ready(function() {
+/*
+                $('#register').click(function(data) {
+                    $('#status_box').hide();
+                    var email = $('#reg_email').val();
+                    var password = $('#reg_password').val();
+                    var confirm_password = $('#confirm_password').val();
+                    var valid = true;
+                    if (!ValidateEmail(email)) {
+                        $('#status_box').text('Invalid email address.  Please check.');
+                        $('#status_box').show();
+                        valid = false;
+                    }
+                    if (password !== confirm_password) {
+                        $('#status_box').text('Passwords do not match.  Please try again.');
+                        $('#status_box').show();
+                        valid = false;
+                    }
+
+                    if (valid) {
+                        $.post('/register',
+                            {
+                                email: email,
+                                password: password
+                            },
+                            function(data) {
+                            }, 'json'
+                        );
+                    }
+
+                    console.log(email);
+                });
+*/
+                Reveal.initialize({parallaxBackgroundImage:'assets/img/main_background.jpg',maxScale:'1.0',minScale:'0.2',width:480,height:350,progress:false});
+            });
+
+            function ValidateEmail(mail) {
+                if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail))  {  
+                    return (true)  
+                }  
+                return (false)  
+            } 
+        </script>
+    </body>
+</html>
