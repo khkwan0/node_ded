@@ -8,7 +8,10 @@ var passport = require('passport'),
     TwitterStrategy = require('passport-twitter').Strategy,
     LocalStrategy = require('passport-local').Strategy,
     SteamStrategy = require('passport-steam').Strategy,
-    WindowsLiveStrategy = require('passport-windowslive').Strategy;
+    WindowsLiveStrategy = require('passport-windowslive').Strategy,
+    BattleNetStrategy = require('passport-bnet').Strategy,
+    YahooStrategy = require('passport-yahoo-oauth2').OAuth2Strategy;
+
 var app = express();
 var RedisStore = require('connect-redis')(session);
 var bodyParser = require('body-parser');
@@ -255,6 +258,92 @@ passport.use(new WindowsLiveStrategy({
     }
 ));
 
+passport.use(new BattleNetStrategy({
+        clientID: config.bnet.clientID,
+        clientSecret: config.bnet.secret,
+        callbackURL: "https://caldrivers.com/auth/bnet/callback",
+        region: "us"
+    },
+    function(accessToken, refreshToken, profile, done) {
+    console.log(profile);
+        email = profile.battletag;
+        redis_client.get(email, function(err, data) {
+            if (err) {
+                return done(err);
+            }
+            if (data) {
+                user = JSON.parse(data);
+                if (typeof user.profile === 'undefined') {
+                    user.profile = {};
+                }
+                if (typeof user.profile.twitter === 'undefined') {
+                    user.profile.bnet= profile;
+                }
+                redis_client.set(email, JSON.stringify(user), function(err) {
+                    if (err) {
+                        throw(err);
+                    }
+                    done(null, user);
+                });
+            } else { 
+                var new_user = {
+                    'email': email,
+                    'datetime': Date.now() ,
+                    'profile': {bnet:profile}
+                }
+                redis_client.set(email, JSON.stringify(new_user), function(err) {
+                    if (err) {
+                        throw(err);
+                    }
+                    return done(null, new_user);
+                });
+            }
+        });
+    }
+));
+
+passport.use(new YahooStrategy({
+        clientID: config.yahoo.clientID,
+        clientSecret: config.yahoo.clientSecret,
+        callbackURL: "https://caldrivers.com/auth/yahoo/callback"
+    },
+    function(accessToken, refreshToken, profile, done) {
+        email = profile.displayName
+        redis_client.get(email, function(err, data) {
+            if (err) {
+                return done(err);
+            }
+            if (data) {
+                user = JSON.parse(data);
+                if (typeof user.profile === 'undefined') {
+                    user.profile = {};
+                }
+                if (typeof user.profile.twitter === 'undefined') {
+                    user.profile.yahoo = profile;
+                }
+                redis_client.set(email, JSON.stringify(user), function(err) {
+                    if (err) {
+                        throw(err);
+                    }
+                    done(null, user);
+                });
+            } else { 
+                var new_user = {
+                    'email': email,
+                    'datetime': Date.now() ,
+                    'profile': {yahoo:profile}
+                }
+                redis_client.set(email, JSON.stringify(new_user), function(err) {
+                    if (err) {
+                        throw(err);
+                    }
+                    return done(null, new_user);
+                });
+            }
+        });
+    }
+));
+
 passport.use('local-register', new LocalStrategy({
                 usernameField : 'email',
                 passwordField : 'password',
@@ -396,6 +485,8 @@ app.get('/auth/google', passport.authenticate('google', {scope: 'email'}));
 app.get('/auth/twitter', passport.authenticate('twitter', {scope: 'email'}));
 app.get('/auth/steam', passport.authenticate('steam', {scope: 'email'}));
 app.get('/auth/windowslive', passport.authenticate('windowslive', {scope: ['wl.signin', 'wl.basic']}));
+app.get('/auth/bnet', passport.authenticate('bnet'));
+app.get('/auth/yahoo', passport.authenticate('yahoo'));
 app.post('/auth/local', passport.authenticate('local-login',
             {
                 successRedirect: '/status',
@@ -424,6 +515,16 @@ app.get('/auth/steam/callback', passport.authenticate('steam', {
 }));
 
 app.get('/auth/windowslive/callback', passport.authenticate('windowslive', {
+    successRedirect: '/status',
+    failureRedirect: '/login'
+}));
+
+app.get('/auth/bnet/callback', passport.authenticate('bnet', {
+    successRedirect: '/status',
+    failureRedirect: '/login'
+}));
+
+app.get('/auth/yahoo/callback', passport.authenticate('yahoo', {
     successRedirect: '/status',
     failureRedirect: '/login'
 }));
@@ -586,12 +687,12 @@ app.post('/save_shipping', function(req, res) {
 app.get('/billing', function(req, res) {
     if (typeof req.user !== 'undefined' && typeof req.user.purchase !== 'undefined' && req.user.email!='khkwan0@gmail.com') {
         res.render('congrats.html', {'email':req.user.email});
-    }
-    if (typeof req.user !== 'undefined' && req.user.pass_final!=='undefined' && req.user.pass_final) {
+    } else if (typeof req.user !== 'undefined' && req.user.pass_final!=='undefined' && req.user.pass_final) {
         shipping = req.user.shipping;
         res.render('billing.html', {'email':req.user.email,'shipping':shipping});
+    } else {
+        res.status(404).send('404');
     }
-    res.status(404).send('404');
 });
 
 app.post('/save_billing', function(req, res) {
@@ -634,7 +735,7 @@ app.post('/do_purchase', function(req, reso) {
         var base_price = 45.00;
         var shipping_cost = 4.99;
         if (req.user.billing.expedite) {
-            shipping_cost= 14.99;
+            shipping_cost= 19.95
         }
         total_amount = base_price + shipping_cost;
         names = req.user.billing.name.split(' ',2);
