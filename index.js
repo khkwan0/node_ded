@@ -10,7 +10,7 @@ var passport = require('passport'),
     SteamStrategy = require('passport-steam').Strategy,
     WindowsLiveStrategy = require('passport-windowslive').Strategy,
     BattleNetStrategy = require('passport-bnet').Strategy,
-    YahooStrategy = require('passport-yahoo-oauth2').OAuth2Strategy;
+    YahooStrategy = require('passport-yahoo').Strategy;
 
 var app = express();
 var RedisStore = require('connect-redis')(session);
@@ -23,13 +23,13 @@ var config = require('./config');
 var https = require('https');
 var uuid = require('uuid');
 var parseString= require('xml2js').parseString;
+var Twitter = require('twitter');
 
 redis_client = redis.createClient();
 redis_client.select(2);
 lib_client = redis.createClient();
 lib_client.select(3);
 lib_client.flushdb();
-
 
 app.use(cookieParser());
 app.use(session({
@@ -265,7 +265,6 @@ passport.use(new BattleNetStrategy({
         region: "us"
     },
     function(accessToken, refreshToken, profile, done) {
-    console.log(profile);
         email = profile.battletag;
         redis_client.get(email, function(err, data) {
             if (err) {
@@ -303,13 +302,15 @@ passport.use(new BattleNetStrategy({
 ));
 
 passport.use(new YahooStrategy({
-        clientID: config.yahoo.clientID,
-        clientSecret: config.yahoo.clientSecret,
-        callbackURL: "https://caldrivers.com/auth/yahoo/callback"
+        returnURL: 'https://caldrivers.com/auth/yahoo/callback',
+        realm: 'https://caldrivers.com'
     },
-    function(accessToken, refreshToken, profile, done) {
-        email = profile.displayName
-        redis_client.get(email, function(err, data) {
+    function(identifier, profile, done) {
+        console.log(profile);
+        return done(null, profile);
+    }));
+    /*
+        redis_client.get(guid, function(err, data) {
             if (err) {
                 return done(err);
             }
@@ -319,9 +320,9 @@ passport.use(new YahooStrategy({
                     user.profile = {};
                 }
                 if (typeof user.profile.twitter === 'undefined') {
-                    user.profile.yahoo = profile;
+                    user.profile.guid = profile;
                 }
-                redis_client.set(email, JSON.stringify(user), function(err) {
+                redis_client.set(guid, JSON.stringify(user), function(err) {
                     if (err) {
                         throw(err);
                     }
@@ -329,11 +330,11 @@ passport.use(new YahooStrategy({
                 });
             } else { 
                 var new_user = {
-                    'email': email,
+                    'guid': guid,
                     'datetime': Date.now() ,
                     'profile': {yahoo:profile}
                 }
-                redis_client.set(email, JSON.stringify(new_user), function(err) {
+                redis_client.set(guid, JSON.stringify(new_user), function(err) {
                     if (err) {
                         throw(err);
                     }
@@ -343,6 +344,7 @@ passport.use(new YahooStrategy({
         });
     }
 ));
+        */
 
 passport.use('local-register', new LocalStrategy({
                 usernameField : 'email',
@@ -833,6 +835,29 @@ app.get('/receipt', function(req, res) {
     } else {
         res.status(404);
     }
+});
+
+var twitter_client = new Twitter({
+    consumer_key: config.twitter.consumerKey,
+    consumer_secret: config.twitter.consumerSecret,
+    access_token_key: config.twitter.accessToken,
+    access_token_secret: config.twitter.accessSecret
+});
+
+twitter_client.stream('statuses/filter', {follow:config.twitter.ca_dmv_id}, function(stream) {
+    stream.on('data', function(tweet) {
+        console.log(tweet);
+        if (!tweet.in_reply_to_status_id) {
+            redis_client.lpush('ca_dmv_tweets', tweet.body, function(err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        }
+    });
+    stream.on('error', function(error) {
+        console.log('ERROR: '+error);
+    });
 });
 
 function checkAnswers(answers, quiz) {
