@@ -847,8 +847,8 @@ var twitter_client = new Twitter({
 twitter_client.stream('statuses/filter', {follow:config.twitter.ca_dmv_id}, function(stream) {
     stream.on('data', function(tweet) {
         console.log(tweet);
-        if (!tweet.in_reply_to_status_id) {
-            redis_client.lpush('ca_dmv_tweets', tweet.body, function(err) {
+        if (tweet.user.id_str === config.twitter.ca_dmv_id) {
+            redis_client.lpush('ca_dmv_tweets', tweet.timestamp_ms+','+tweet.text, function(err) {
                 if (err) {
                     console.log(err);
                 }
@@ -882,7 +882,6 @@ function checkAnswers(answers, quiz) {
     });
     return wrong;
 }
-
 
 function passFinal(req, answers) {
     req.user.pass_final = 1;
