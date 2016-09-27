@@ -866,7 +866,7 @@ twitter_client.stream('statuses/filter', {follow:config.twitter.ca_dmv_id}, func
             d = new Date(parseInt(tweet.timestamp_ms));
             tweet_info = {
                 time: d.toLocaleDateString() + ' ' + d.toLocaleTimeString(),
-                text: url2a(tweet.text)
+                text: url2a(tweet.text, true)
             }
             tweets.unshift(tweet_info);
             redis_client.set('ca_dmv_tweets', JSON.stringify(tweets), function(err) {

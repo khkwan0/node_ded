@@ -51,7 +51,7 @@
                 <div id="news_content">
                     {% for tweet in tweets %}
                         <div class="the_tweet">
-                            {{ tweet.time}} {{ tweet.text }}
+                            {{ tweet.time}} {% autoescape false %}{{ tweet.text }}{% endautoescape %}
                         </div>
                     {%  endfor %}
                 </div>
