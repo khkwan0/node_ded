@@ -8,6 +8,17 @@
         <link href='https://fonts.googleapis.com/css?family=Gloria+Hallelujah' rel='stylesheet' type='text/css'>
         <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="assets/css/main.css" />
+        <link rel="stylesheet" type="text/css" href="assets/css/slick/slick.css"/>
+        <!-- Add the slick-theme.css if you want default styling -->
+        <link rel="stylesheet" type="text/css" href="assets/css/slick/slick-theme.css"/>
+        <style>
+            .the_tweet {
+                color: #b09256;
+                       padding-left:15px;
+                       padding-right:15px;
+            }
+
+        </style>
     </head>
     <body>
         <video autoplay loop id="bgvid">
@@ -34,15 +45,18 @@
                 </div>
             </div>
         </nav>
-        <!--
         <div class="sidebar-wrapper">
             <div style="padding-top:5%;margin-left:5%;background-color:rgba(0,0,0,0.5);width:30%;height:100%">
                 <div style="text-align:center;color:#FCFBE3"><h3>Latest news from the DMV</h3></div>
                 <div id="news_content">
+                    {% for tweet in tweets %}
+                        <div class="the_tweet">
+                            {{ tweet.time}} {{ tweet.text }}
+                        </div>
+                    {%  endfor %}
                 </div>
             </div>
         </div>
-        -->
         <div class="container-fluid">
             <div class="get_started">
                 <h1><a style="color:#b09256;" href="/disclaimer">Get started NOW</a></h1>
@@ -51,5 +65,9 @@
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="assets/js/slick/slick.min.js"></script>
+        <script>
+            $('#news_content').slick({autoplay:true,autoplaySpeed:6000});
+        </script>
     </body>
 </html>
