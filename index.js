@@ -24,7 +24,6 @@ var https = require('https');
 var uuid = require('uuid');
 var parseString= require('xml2js').parseString;
 var Twitter = require('twitter');
-var url2a = require('url2a');
 
 redis_client = redis.createClient();
 redis_client.select(2);
@@ -866,7 +865,7 @@ twitter_client.stream('statuses/filter', {follow:config.twitter.ca_dmv_id}, func
             d = new Date(parseInt(tweet.timestamp_ms));
             tweet_info = {
                 time: d.toLocaleDateString() + ' ' + d.toLocaleTimeString(),
-                text: url2a(tweet.text, true)
+                text: tweet.text
             }
             tweets.unshift(tweet_info);
             redis_client.set('ca_dmv_tweets', JSON.stringify(tweets), function(err) {
