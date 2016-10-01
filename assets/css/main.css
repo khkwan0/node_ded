@@ -69,11 +69,31 @@ a:hover {
 .get_started {
 /*    font-family: 'Gloria Hallelujah', cursive; */
     font-family: Arial, Sans Serif, Helvetica;
+      background-color: rgba(0,0,0,0.8);
+      padding-left:2%;
+      padding-right:2%;
+      padding-bottom:1%;
+      border-radius:25px;
+    color:black;
+}
+
+.middle_pane {
+    margin-top:200px;
+}
+
+@media (max-width: 480px) {
+    .middle_pane {
+        margin-top: 200px;
+    }
+}
+
+/*
+.get_started {
+    font-family: Arial, Sans Serif, Helvetica;
 position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-/*background-color: rgba(138,192,7,0.8);*/
       background-color: rgba(0,0,0,0.8);
       padding-left:2%;
       padding-right:2%;
@@ -81,3 +101,4 @@ transform:translate(-50%,-50%);
       border-radius:25px;
 color:black;
 }
+*/
