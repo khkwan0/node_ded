@@ -23,7 +23,7 @@ var config = require('./config');
 var https = require('https');
 var uuid = require('uuid');
 var parseString= require('xml2js').parseString;
-var Twitter = require('twitter');
+var TwitterStream = require('twitter-stream-api');
 
 redis_client = redis.createClient();
 redis_client.select(2);
@@ -851,13 +851,45 @@ app.get('/receipt', function(req, res) {
     }
 });
 
-var twitter_client = new Twitter({
+var twitter_keys = {
     consumer_key: config.twitter.consumerKey,
     consumer_secret: config.twitter.consumerSecret,
-    access_token_key: config.twitter.accessToken,
-    access_token_secret: config.twitter.accessSecret
+    token: config.twitter.accessToken,
+    token_secret: config.twitter.accessSecret
+};
+
+var Twitter = new TwitterStream(twitter_keys, false);
+Twitter.stream('statuses/filter', {
+    follow: config.twitter.ca_dmv_id
 });
 
+Twitter.on('data', function(tweet) {
+    console.log(tweet);
+    if (tweet.user.id_str === config.twitter.ca_dmv_id && !tweet.in_reply_to_user_id) {
+        d = new Date(parseInt(tweet.timestamp_ms));
+        tweet_info = {
+            time: d.toLocaleDateString() + ' ' + d.toLocaleTimeString(),
+            text: tweet.text
+        }
+        tweets.unshift(tweet_info);
+        redis_client.set('ca_dmv_tweets', JSON.stringify(tweets), function(err) {
+            if (err) {
+                console.log(err);
+            }
+        });
+    }
+});
+
+Twitter.on('connection success', function(uri) {
+    console.log('connection success', uri);
+});
+Twitter.on('connection error stall', function () {
+    console.log('connection error stall');
+});
+Twitter.on('data keep-alive', function () {
+    console.log('data keep-alive');
+});
+/*
 twitter_client.stream('statuses/filter', {follow:config.twitter.ca_dmv_id}, function(stream) {
     stream.on('data', function(tweet) {
         console.log(tweet);
@@ -879,6 +911,7 @@ twitter_client.stream('statuses/filter', {follow:config.twitter.ca_dmv_id}, func
         console.log('ERROR: '+error);
     });
 });
+*/
 
 function checkAnswers(answers, quiz) {
     wrong = {};
