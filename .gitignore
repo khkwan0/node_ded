@@ -1,0 +1,5 @@
+lib/
+config.js
+assets/video/*
+node_modules
+node_modules_bak
