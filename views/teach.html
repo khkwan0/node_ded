@@ -38,7 +38,7 @@
                 <div class="slides">
                     {% for issue in issues %}
                     <section>
-                            {% autoescape false%}{{ issue.lesson }}{% endautoescape %}
+                            {{ issue.lesson | safe }}
                     </section>
                     {% endfor %}
                 </div>

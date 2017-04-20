@@ -8,21 +8,24 @@
     "url": "git://github.com/khkwan0/node_ded.git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.3.0",
     "authorizenet": "^1.0.0",
     "body-parser": "^1.15.2",
     "connect-flash": "^0.1.1",
     "connect-redis": "^3.1.0",
     "consolidate": "^0.14.1",
     "cookie-parser": "^1.4.3",
-    "express": "^4.14.0",
+    "express": "^4.15.2",
     "express-session": "^1.14.1",
     "hamljs": "^0.6.2",
     "linkifyjs": "^2.1.2",
+    "moment-timezone": "^0.5.13",
+    "nunjucks": "^3.0.0",
     "passport": "^0.3.2",
     "passport-bnet": "^1.2.1",
     "passport-facebook": "^2.1.1",
@@ -31,15 +34,15 @@
     "passport-steam": "^1.0.5",
     "passport-twitter": "^1.0.4",
     "passport-windowslive": "^1.0.2",
+    "passport-yahoo": "^0.3.0",
     "passport-yahoo-oauth2": "^0.2.6",
     "reveal": "0.0.4",
+    "sendmail": "^1.1.1",
     "slick-carousel": "^1.6.0",
     "socket.io": "^1.4.8",
     "striptags": "^2.1.1",
-    "swig": "^1.4.2",
     "twitter": "^1.4.0",
     "twitter-stream-api": "^0.4.3",
-    "url2a": "^1.0.1",
     "uuid": "^2.0.2",
     "xml2js": "^0.4.17"
   }

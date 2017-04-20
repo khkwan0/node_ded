@@ -54,7 +54,7 @@
                         <div id="news_content">
                             {% for tweet in tweets %}
                                 <div class="the_tweet">
-                                    {{ tweet.time}} {% autoescape false %}{{ tweet.text }}{% endautoescape %}
+                                    {{ tweet.time}} {{ tweet.text | escape }}
                                 </div>
                             {%  endfor %}
                         </div>
@@ -75,6 +75,13 @@
         <script src="assets/js/linkifyjs/linkify-jquery.min.js"></script>
         <script>
             $('#news_content').linkify({target:"_blank", rel:"noreferrer"});
+        </script>
+        <script>
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    console.log(position.coords.latitude + ' ' + position.coords.longitude);
+                });
+            }
         </script>
         <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

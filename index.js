@@ -24,21 +24,44 @@ var https = require('https');
 var uuid = require('uuid');
 var parseString= require('xml2js').parseString;
 var TwitterStream = require('twitter-stream-api');
+var sendMail = require('sendmail')();
+var async = require('async');
+var moment = require('moment-timezone');
 
-redis_client = redis.createClient();
+redis_client = redis.createClient(
+        {
+            'host': config.redis.host
+        });
 redis_client.select(2);
-lib_client = redis.createClient();
+lib_client = redis.createClient(
+        {
+            'host': config.redis.host
+        });
 lib_client.select(3);
 lib_client.flushdb();
 
-tweets = [];
+tweet_store = redis.createClient(
+        {
+            'host': config.redis.host
+        });
+tweet_store.select(4);
 
-redis_client.get('ca_dmv_tweets', function(err, data) {
+user_list = redis.createClient(
+        {
+            'host': config.redis.host
+        });
+user_list.select(5);
+
+var tweets = [];
+
+tweet_store.get('ca_dmv_tweets', function(err, data) {
     if (err) {
-        console.log(err);
+        console.log('redis get ca_dmv_tweets error: ' + err);
     } else {
         try {
-            tweets = JSON.parse(data);
+            if (typeof data !== 'undefined' && data != 'null') {
+                tweets = JSON.parse(data);
+            }
         } catch(e) {
             console.log(e);
         }
@@ -48,7 +71,7 @@ redis_client.get('ca_dmv_tweets', function(err, data) {
 app.use(cookieParser());
 app.use(session({
         store: new RedisStore({
-            host: 'localhost',
+            host: config.redis.host,
             port: 6379,
             db: 2
         }),
@@ -61,6 +84,25 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 }));
 app.use(flash());
+
+var mailOptions = {
+    from: 'info@caldrivers.com',
+    to: 'ken@caldrivers.com',
+    subject: 'Server start',
+    html: '<h2>Server just started up</h2>'
+};
+sendmail(mailOptions);
+
+// send mail
+function sendmail(mailOptions) {
+    sendMail(mailOptions, function(err, reply) {
+        if (err) {
+            console.log(err && err.stack);
+        }
+        console.log(reply);
+    });
+}
+
 passport.use(new FacebookStrategy({
             clientID: config.facebook.clientID,
             clientSecret: config.facebook.clientSecret,
@@ -93,6 +135,14 @@ passport.use(new FacebookStrategy({
                         'datetime': Date.now() ,
                         'profile': {fb:profile}
                     }
+                    mailOptions = {
+                        from: 'info@caldrivers.com',
+                        to: 'support@caldrivers.com',
+                        subject: 'New user: '+ email,
+                        html: '<div>Date: ' + new_user.datetime + '</div><br /><div><pre>' + new_user.profile + '</pre></div>'
+                    }
+                    sendmail(mailOptions);
+                    addNewUser(email);
                     redis_client.set(email, JSON.stringify(new_user), function(err) {
                         if (err) {
                             throw(err);
@@ -135,6 +185,14 @@ passport.use(new GoogleStrategy({
                     'datetime': Date.now() ,
                     'profile': {google:profile}
                 }
+                mailOptions = {
+                    from: 'info@caldrivers.com',
+                    to: 'support@caldrivers.com',
+                    subject: 'New user: '+ email,
+                    html: '<div>Date: ' + new_user.datetime + '</div><br /><div><pre>' + new_user.profile + '</pre></div>'
+                }
+                sendmail(mailOptions);
+                addNewUser(email);
                 redis_client.set(email, JSON.stringify(new_user), function(err) {
                     if (err) {
                         throw(err);
@@ -381,6 +439,14 @@ passport.use('local-register', new LocalStrategy({
                                     local: {}
                                 }
                             }
+                            mailOptions = {
+                                from: 'info@caldrivers.com',
+                                to: 'support@caldrivers.com',
+                                subject: 'New user: '+ email,
+                                html: '<div>Date: ' + new_user.datetime + '</div><br /><div><pre>' + new_user.profile + '</pre></div>'
+                            }
+                            sendmail(mailOptions);
+                            addNewUser(email);
                             redis_client.set(email, JSON.stringify(new_user));
                             return done(null, new_user);
                         }
@@ -424,8 +490,8 @@ passport.deserializeUser(function(id, done) {
         done(null, id);
 });
 
-app.engine('html',  cons.swig);
-app.set('view engine', 'swig');
+app.engine('html',  cons.nunjucks);
+app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 
 app.use('/assets', express.static('assets'));
@@ -600,7 +666,8 @@ app.get('/quiz/:unit', function(req, res) {
                 } else if (!data) {
                     fs.readFile('lib/quiz'+unit+'.js', 'utf8', function(err, data) {
                         if (err) {
-                            throw(err);
+                            console.log(err);
+                            res.redirect('/status');
                         } else {
                             quiz = JSON.parse(data);
                             lib_client.set('quiz'+unit, data);
@@ -638,14 +705,18 @@ app.post('/api/checkAnswers', function(req, res) {
     quiz = [];
     redis_client.get('quiz'+unit, function(err, data) {
         if (err) {
-            res.render('status.html', {'email':req.user.email});
+            res.status(404).send('404');
         } else if (!data) {
             fs.readFile('lib/quiz'+unit+'.js', 'utf8', function(err, data) {
                 if (err) {
-                    throw(err);
+                    res.status(404).send('404');
                 } else {
                     quiz = JSON.parse(data);
                     wrong = checkAnswers(answers, quiz);
+                    console.log('check anbswer'+wrong.length + unit);
+                    if (wrong.length === 0 && unit == 69) {
+                        passFinal(req, answers);
+                    }
                     res.send(JSON.stringify(wrong));
                     redis_client.set('quiz'+unit, data);
                 }
@@ -653,7 +724,8 @@ app.post('/api/checkAnswers', function(req, res) {
         } else {
             quiz = JSON.parse(data);
             wrong = checkAnswers(answers, quiz);
-            if (wrong.length === 0) {
+            console.log('check answers'+wrong.length + unit);
+            if (wrong.length === 0 && unit == 69) {
                 passFinal(req, answers);
             }
             res.send(JSON.stringify(wrong));
@@ -687,7 +759,7 @@ app.post('/save_shipping', function(req, res) {
         redis_client.set(req.user.email, JSON.stringify(req.user), function(err) {
             if (err) {
                 console.log(err);
-                rv.err = 'Problem saving info.  Please contact info@caldrivers.com';
+                rv.err = 'Problem saving info.  Please contact support@caldrivers.com';
             } else {
                 rv.valid = 1;
             }
@@ -695,7 +767,7 @@ app.post('/save_shipping', function(req, res) {
         });
     } catch(e) {
         console.log(e);
-        rv.err = 'Problem saving info.  Please contact info@caldrivers.com';
+        rv.err = 'Problem saving info.  Please contact support@caldrivers.com';
         res.send(JSON.stringify(rv));
     }
 });
@@ -720,7 +792,7 @@ app.post('/save_billing', function(req, res) {
         }
         redis_client.set(req.user.email, JSON.stringify(req.user), function(err) {
             if (err) {
-                rv.err = 'Problem saving info.  Please contact info@caldrivers.com';
+                rv.err = 'Problem saving info.  Please contact support@caldrivers.com';
             } else {
                 rv.valid = 1;
                 req.user.cc = JSON.parse(req.body.cc);
@@ -730,19 +802,55 @@ app.post('/save_billing', function(req, res) {
         });
     } catch(e) {
         console.log(e);
-        rv.err = 'Problem saving info.  Please contact info@caldrivers.com';
+        rv.err = 'Problem saving info.  Please contact support@caldrivers.com';
         res.send(JSON.stringify(rv));
     }
 });
 
 app.get('/final_verify', function(req, res) {
-    if (typeof req.user.purchase !== 'undefined' && req.user.email !== 'khkwan0@gmail.com') {
+    if (typeof req.user !== 'undefined' && typeof req.user.purchase !== 'undefined' && req.user.email !== 'khkwan0@gmail.com') {
         res.render('congrats.html',{'email':req.user.email});
     }
-    if (req.user.pass_final && req.user.billing && req.user.shipping && req.user.cc) {
+    if (typeof req.user !== 'undefined' && req.user.pass_final && req.user.billing && req.user.shipping && req.user.cc) {
         res.render('final_verify.html', { 'email':req.user.email,'shipping':req.user.shipping,'billing':req.user.billing,'cc':req.user.cc});
     } else {
-        res.status(404);
+        res.status(404).send('Not found');
+    }
+});
+
+app.get('/admin', function(req, res) {
+    if (typeof req.user !== 'undefined' && req.user.email === 'khkwan0@gmail.com') {
+        user_list.get('users', function(err, data) {
+            if (err) console.log(err);
+            if (data) {
+                users = JSON.parse(data);
+            } else {
+                users = [];
+            }
+            var user_data = [];
+            async.each(users,
+                function(user, callback) {
+                    redis_client.get(user, function(err, data) {
+                        if (data) {
+                            user = JSON.parse(data);
+                            user.datetime = moment(user.datetime).tz('America/los_angeles').format('YYYY-MM-DD HH:mm')
+                            user_data.push(user);
+                        }
+                        callback();
+                    });
+                },
+                function(err) {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        console.log(user_data);
+                        res.render('admin.html', {'user_data': user_data});
+                    }
+                }
+            );
+        });
+    } else {
+        res.status(404).send('Not found');
     }
 });
 
@@ -840,6 +948,13 @@ app.post('/do_purchase', function(req, reso) {
 
 app.get('/receipt', function(req, res) {
     if (typeof req.user.purchase !== 'undefined') {
+        mailOptions = {
+            from : 'info@caldrivers.com',
+            to: 'support@caldrivers.com',
+            subject: 'Purchase Complete! ' + req.user.email,
+            html: '<div>Send certificate to:</div><br /><div>' + req.user.shipping + '</div><div>Expedite: ' + req.user.billing.expedite + '</div>'
+        }
+        sendmail(mailOptions);
         var cc = {};
         cc.auth_code = req.user.purchase['authCode'][0];
         cc.message = req.user.purchase['messages'][0]['message'][0]['description'][0];
@@ -863,16 +978,23 @@ Twitter.stream('statuses/filter', {
     follow: config.twitter.ca_dmv_id
 });
 
-Twitter.on('data', function(tweet) {
-    console.log(tweet);
+Twitter.on('data', function(buf) {
+    tweet = JSON.parse(buf.toString());
+    console.log('data' + new Date().getTime());
     if (tweet.user.id_str === config.twitter.ca_dmv_id && !tweet.in_reply_to_user_id) {
         d = new Date(parseInt(tweet.timestamp_ms));
         tweet_info = {
             time: d.toLocaleDateString() + ' ' + d.toLocaleTimeString(),
             text: tweet.text
         }
-        tweets.unshift(tweet_info);
-        redis_client.set('ca_dmv_tweets', JSON.stringify(tweets), function(err) {
+        console.log(tweet_info);
+        try {
+            console.log('tweets: ' + JSON.stringify(tweets));
+            tweets.unshift(tweet_info);
+        } catch(e) {
+            console.log(e);
+        }
+        tweet_store.set('ca_dmv_tweets', JSON.stringify(tweets), function(err) {
             if (err) {
                 console.log(err);
             }
@@ -886,8 +1008,24 @@ Twitter.on('connection success', function(uri) {
 Twitter.on('connection error stall', function () {
     console.log('connection error stall');
 });
+Twitter.on('connection error network', function(error) {
+    console.log('connection error network',error);
+});
+Twitter.on('connection error http', function (httpStatusCode) {
+    console.log('connection error http', httpStatusCode);
+});
+Twitter.on('connection rate limit', function (httpStatusCode) {
+    console.log('connection rate limit', httpStatusCode);
+});
+Twitter.on('connection error unknown', function (error) {
+    console.log('connection error unknown', error);
+    Twitter.close();
+});
+Twitter.on('data error', function (error) {
+    console.log('data error', error);
+});
 Twitter.on('data keep-alive', function () {
-    console.log('data keep-alive');
+//    console.log('data keep-alive');
 });
 /*
 twitter_client.stream('statuses/filter', {follow:config.twitter.ca_dmv_id}, function(stream) {
@@ -914,7 +1052,7 @@ twitter_client.stream('statuses/filter', {follow:config.twitter.ca_dmv_id}, func
 */
 
 function checkAnswers(answers, quiz) {
-    wrong = {};
+    wrong = [];
     answers.forEach(function(answer, idx) {
         var correct = false;;
         tokens = answer.split(',',2);
@@ -939,7 +1077,37 @@ function checkAnswers(answers, quiz) {
 function passFinal(req, answers) {
     req.user.pass_final = 1;
     req.user.final = answers;
+    console.log('pass final '+req.user);
     redis_client.set(req.user.email, JSON.stringify(req.user));
+}
+
+function addNewUser(email) {
+    user_list.get('users', function(err, data) {
+        if (err) {
+            global_list = [];
+        } else {
+            console.log(data);
+            if (!data) {
+                console.log('data is null');
+                global_list = [];
+            } else {
+                global_list = JSON.parse(data);
+            }
+            global_list.push(email);
+        }
+        user_list.set('users', JSON.stringify(global_list), function(err) {
+            if (err) {
+                console.log(err);
+                mailOptions = {
+                    from: 'info@caldrivers.com',
+                    to: 'ken@caldrivers.com',
+                    subject: 'Add New user err (redis set): '+ err,
+                    html: '<div>Date: ' + Date.now() + '</div><br /><div><pre>Redis Set Error (add new user)</pre></div><div>'+err+'</div>'
+                }
+                sendmail(mailOptions);
+            }
+        });
+    });
 }
 
 app.listen(8080, null);
