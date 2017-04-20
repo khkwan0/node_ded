@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Caldrivers.com - Free driving school</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href='https://fonts.googleapis.com/css?family=Gloria+Hallelujah' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" href="/assets/css/main.css" />
+        <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/assets/js/creditcardjs/creditcardjs-v0.10.13.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/assets/reveal/css/theme/moon.css" />
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a href="/" class="navbar-brand" id="main-logo">Caldrivers.com</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse" style="font-family: Arial">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#">{{ email }}</a></li>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/disclaimer">Get Started</a></li>
+                        <li><a href="/about">About</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div style="padding-top:65px;font-family:Arial;color:#eee8d5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <h2>USERS</h2>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="table-responsive">
+                            <table class="table">
+                                {% for user in user_data %}
+                                    {% set nq = loop.index0 %}
+                                        <tr><td>{{ nq }}. {{ user.email }}</td><td>{{ user.datetime }}</td></tr>
+                                    {% else %}
+                                        <tr><td>Blank</td></tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="/assets/js/jquery.min.js"></script>
+        <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+    </body>
+</html>
