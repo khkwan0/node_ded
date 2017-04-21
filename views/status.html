@@ -144,6 +144,7 @@
                         <li><a href="/status">Get Started</a></li>
                         <li><a href="/about">About</a></li>
                         <li><a href="/contact">Contact</a></li>
+                        {% if email %}<li><a href="/logout">Logout</a></li>{% endif %}
                     </ul>
                 </div>
             </div>
@@ -152,6 +153,11 @@
             <div class="row">
                 <div class="col-lg-4"></div>
                     <div class="col-lg-4 get_started">
+                        {% if admin %}
+                            <div>
+                                <h2><a style="color:#b09256;" href="/admin">Admin</a></h2>
+                            </div>
+                        {% endif %}
                         <div>
                             <h2><a style="color:#b09256;" href="/lesson/1">Begin the lesson</a></h2>
                         </div>

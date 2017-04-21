@@ -123,6 +123,7 @@ passport.use(new FacebookStrategy({
                     if (typeof user.profile.fb === 'undefined') {
                         user.profile.fb = profile;
                     }
+                    user.lastlogin = Date.now();
                     redis_client.set(email, JSON.stringify(user), function(err) {
                         if (err) {
                             throw(err);
@@ -133,7 +134,9 @@ passport.use(new FacebookStrategy({
                     var new_user = {
                         'email': email,
                         'datetime': Date.now() ,
-                        'profile': {fb:profile}
+                        'profile': {fb:profile},
+                        'admin': 0,
+                        'lastlogin': Date.now()
                     }
                     mailOptions = {
                         from: 'info@caldrivers.com',
@@ -173,6 +176,7 @@ passport.use(new GoogleStrategy({
                 if (typeof user.profile.google === 'undefined') {
                     user.profile.google = profile;
                 }
+                user.lastlogin = Date.now();
                 redis_client.set(email, JSON.stringify(user), function(err) {
                     if (err) {
                         throw(err);
@@ -183,7 +187,9 @@ passport.use(new GoogleStrategy({
                 var new_user = {
                     'email': email,
                     'datetime': Date.now() ,
-                    'profile': {google:profile}
+                    'profile': {google:profile},
+                    'admin': 0,
+                    'lastlogin': Date.now()
                 }
                 mailOptions = {
                     from: 'info@caldrivers.com',
@@ -437,7 +443,10 @@ passport.use('local-register', new LocalStrategy({
                                 datetime: Date.now(),
                                 profile: {
                                     local: {}
-                                }
+                                },
+                                admin: 0,
+                                lastlogin: Date.now()
+
                             }
                             mailOptions = {
                                 from: 'info@caldrivers.com',
@@ -469,6 +478,8 @@ passport.use('local-login', new LocalStrategy({
             return done(null, false, req.flash('loginMessage', 'No user found'));
         } else {
             user = JSON.parse(data);
+            user.lastlogin = Date.now();
+            redis_client.set(email, JSON.stringify(user));
             if (password != user.password) {
                 return done(null, false, req.flash('loginMessage', 'Oops! Wrong password'));
             }
@@ -499,16 +510,32 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/', function(req, res) {
-    res.render('index.html',{'tweets':tweets});
+    if (typeof req.user !== 'undefined' && typeof req.user.email !== 'undefined') {
+        res.render('index.html',{'tweets':tweets, 'email': req.user.email});
+    } else {
+        res.render('index.html',{'tweets':tweets});
+    }
 });
 app.get('/about', function(req, res) {
-    res.render('about.html');
+    if (typeof req.user !== 'undefined' && typeof req.user.email !== 'undefined') {
+        res.render('about.html', {'email':req.user.email});
+    } else {
+        res.render('about.html');
+    }
 });
 app.get('/disclaimer', function(req, res) {
-    res.render('disclaimer.html');
+    if (typeof req.user !== 'undefined' && typeof req.user.email !== 'undefined') {
+        res.render('disclaimer.html', {'email': req.user.email});
+    } else {
+        res.render('disclaimer.html');
+    }
 });
 app.get('/contact', function(req, res) {
-    res.render('contact.html');
+    if (typeof req.user !== 'undefined' && typeof req.user.email !== 'undefined') {
+        res.render('contact.html', { 'email': req.user.email });
+    } else {
+        res.render('contact.html');
+    }
 });
 
 app.get('/login', function(req, res) {
@@ -540,7 +567,11 @@ app.post('/register', passport.authenticate('local-register', {
 
 app.get('/status', function(req, res) {
     if (req.user) {
-        res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state});
+        if (req.user.admin) {
+            res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'admin': 1});
+        } else {
+            res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state});
+        }
     } else {
         res.redirect('login');
     }
@@ -696,7 +727,45 @@ app.post('/save_state', function(req, res) {
     } catch(e) {
         console.log(e);
     }
+});
 
+app.post('/getuser', function(req, res) {
+    if (req.user.admin == 1) {
+        try {
+            redis_client.get(req.body.email, function(err, data) {
+                if (err) ress.send(err);
+                res.send(data);
+            });
+        } catch(e) {
+            res.send(e);
+        }
+    }
+});
+
+app.post('/setadmin', function(req, res) {
+    if (req.user.admin == 1) {
+        redis_client.get(req.body.email, function(err, data) {
+            if (err) res.send(err);
+            try {
+                user = JSON.parse(data);
+                if (req.body.admin == 'true') {
+                    user.admin = 1;
+                    console.log(user.email + ' is now an admin');
+                    res.send(user.email + ' is now an admin');
+                } else {
+                    user.admin = 0;
+                    console.log(user.email + ' removed from admin');
+                    res.send(user.email + ' removed from admin');
+                }
+                redis_client.set(req.body.email, JSON.stringify(user));
+            } catch(e) {
+                console.log(e);
+                res.send(e);
+            }
+        });
+    } else {
+        res.sendStatus(404);
+    }
 });
 
 app.post('/api/checkAnswers', function(req, res) {
@@ -819,7 +888,7 @@ app.get('/final_verify', function(req, res) {
 });
 
 app.get('/admin', function(req, res) {
-    if (typeof req.user !== 'undefined' && req.user.email === 'khkwan0@gmail.com') {
+    if (typeof req.user !== 'undefined' && req.user.admin == 1) {
         user_list.get('users', function(err, data) {
             if (err) console.log(err);
             if (data) {
@@ -834,6 +903,11 @@ app.get('/admin', function(req, res) {
                         if (data) {
                             user = JSON.parse(data);
                             user.datetime = moment(user.datetime).tz('America/los_angeles').format('YYYY-MM-DD HH:mm')
+                            if (typeof user.lastlogin !== 'undefined') {
+                                user.lastlogin = moment(user.lastlogin).tz('America/los_angeles').format('YYYY-MM-DD HH:mm')
+                            } else {
+                                user.lastlogin = 'n/a';
+                            }
                             user_data.push(user);
                         }
                         callback();
@@ -844,13 +918,13 @@ app.get('/admin', function(req, res) {
                         console.log(err)
                     } else {
                         console.log(user_data);
-                        res.render('admin.html', {'user_data': user_data});
+                        res.render('admin.html', {'user_data': user_data,'email':req.user.email});
                     }
                 }
             );
         });
     } else {
-        res.status(404).send('Not found');
+        res.sendStatus(404);
     }
 });
 

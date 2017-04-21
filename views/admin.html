@@ -25,11 +25,12 @@
                 </div>
                 <div id="navbar" class="collapse navbar-collapse" style="font-family: Arial">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a href="#">{{ email }}</a></li>
+                        <li><a href="/status">{{ email }}</a></li>
                         <li><a href="/">Home</a></li>
                         <li><a href="/disclaimer">Get Started</a></li>
                         <li><a href="/about">About</a></li>
                         <li><a href="/contact">Contact</a></li>
+                        {% if email %}<li><a href="/logout">Logout</a></li>{% endif %}
                     </ul>
                 </div>
             </div>
@@ -39,13 +40,16 @@
                 <div class="row">
                     <div class="col-xs-6">
                         <h2>USERS</h2>
+                        <pre id="user_data">
+                        </pre>
                     </div>
                     <div class="col-xs-6">
                         <div class="table-responsive">
                             <table class="table">
+                                <tr><th></th><th>Admin</th><th>Email</th><th>Register Date</th><th>Last Login</th></tr>
                                 {% for user in user_data %}
                                     {% set nq = loop.index0 %}
-                                        <tr><td>{{ nq }}. {{ user.email }}</td><td>{{ user.datetime }}</td></tr>
+                                        <tr><td>{{nq}}</td><td><input class="admin_box" type="checkbox" email="{{ user.email }}" {% if user.admin == 1 %}checked{% endif %} /></td><td class="the_user">{{ user.email }}</td><td>{{ user.datetime }}</td><td>{{ user.lastlogin }}</td></tr>
                                     {% else %}
                                         <tr><td>Blank</td></tr>
                                 {% endfor %}
@@ -57,5 +61,40 @@
         </div>
         <script src="/assets/js/jquery.min.js"></script>
         <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('.the_user').click(function() {
+                    $('#user_data').text('');
+                    email = $(this).text();
+                    console.log(email);
+                    $.post('/getuser',
+                        {
+                            'email': email
+                        }, function(data) {
+                            $('#user_data').text(JSON.stringify(data, null, 4));
+                        }, 'json'
+                    );
+                });
+
+                $('.admin_box').click(function() {
+                    email = $(this).attr('email');
+                    checked = false;
+                    if ($(this).prop('checked')) {
+                        checked = true;
+                    } else {
+                        checked = false;
+                    }
+                    console.log(email + checked);
+                    $.post('/setadmin',
+                        {
+                            'email': email,
+                            'admin': checked
+                        }, function(data) {
+                            console.log(data);
+                        }
+                    );
+                });
+            });
+        </script>
     </body>
 </html>
