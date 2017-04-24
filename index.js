@@ -743,7 +743,7 @@ app.post('/getuser', function(req, res) {
 });
 
 app.post('/setadmin', function(req, res) {
-    if (req.user.admin == 1) {
+    if (req.user.admin == 1  && req.user.email == config.superadmin.email) {
         redis_client.get(req.body.email, function(err, data) {
             if (err) res.send(err);
             try {
@@ -811,7 +811,7 @@ app.get('/congrats', function(req, res) {
 });
 
 app.get('/setpass',function(req, res) {
-    if (req.user.email === 'khkwan0@gmail.com') {
+    if (req.user.email === config.superadmin.email) {
         req.user.pass_final = 1;
         redis_client.set(req.user.email, JSON.stringify(req.user));
         res.status(200).send();
@@ -842,7 +842,7 @@ app.post('/save_shipping', function(req, res) {
 });
 
 app.get('/billing', function(req, res) {
-    if (typeof req.user !== 'undefined' && typeof req.user.purchase !== 'undefined' && req.user.email!='khkwan0@gmail.com') {
+    if (typeof req.user !== 'undefined' && typeof req.user.purchase !== 'undefined') {
         res.render('congrats.html', {'email':req.user.email});
     } else if (typeof req.user !== 'undefined' && req.user.pass_final!=='undefined' && req.user.pass_final) {
         shipping = req.user.shipping;
@@ -877,7 +877,7 @@ app.post('/save_billing', function(req, res) {
 });
 
 app.get('/final_verify', function(req, res) {
-    if (typeof req.user !== 'undefined' && typeof req.user.purchase !== 'undefined' && req.user.email !== 'khkwan0@gmail.com') {
+    if (typeof req.user !== 'undefined' && typeof req.user.purchase !== 'undefined') {
         res.render('congrats.html',{'email':req.user.email});
     }
     if (typeof req.user !== 'undefined' && req.user.pass_final && req.user.billing && req.user.shipping && req.user.cc) {
@@ -929,7 +929,7 @@ app.get('/admin', function(req, res) {
 });
 
 app.post('/do_purchase', function(req, reso) {
-    if ((req.user.pass_final && req.user.billing && req.user.shipping && req.user.cc && req.user.purchase === 'undefined') || req.user.email === 'khkwan0@gmail.com') {
+    if (req.user.pass_final && req.user.billing && req.user.shipping && req.user.cc && req.user.purchase === 'undefined') {
         var base_price = 45.00;
         var shipping_cost = 4.99;
         if (req.user.billing.expedite) {
