@@ -1126,25 +1126,28 @@ twitter_client.stream('statuses/filter', {follow:config.twitter.ca_dmv_id}, func
 */
 
 function checkAnswers(answers, quiz) {
-    wrong = [];
+    var wrong = [];
     answers.forEach(function(answer, idx) {
         var correct = false;;
         tokens = answer.split(',',2);
         answer_id = tokens[1];
         question_id = tokens[0];
-//        console.log('quest: '+question_id+' '+'answer: '+answer_id);
+        console.log('quest: '+question_id+' '+'answer: '+answer_id);
         quiz.forEach(function(question, qidx) {
             question.answers.forEach(function(qanswer, aidx) {
-//                console.log('quiz_ans: '+qanswer.answer_id+' quiz_ques: '+question.question_id);
                 if (qanswer.answer_id == answer_id && question.question_id == question_id && qanswer.correct == 1) {
+                console.log('quiz_ans: '+qanswer.answer_id+' quiz_ques: '+question.question_id);
                     correct = true;
                 }
             });
         });
         if (!correct) {
-            wrong[question_id] = 1;
+           console.log(question_id + ' ' + answer_id);
+            wrong.push(question_id);
+            console.log(wrong);
         }
     });
+            console.log(wrong);
     return wrong;
 }
 
