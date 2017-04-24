@@ -568,9 +568,17 @@ app.post('/register', passport.authenticate('local-register', {
 app.get('/status', function(req, res) {
     if (req.user) {
         if (req.user.admin) {
-            res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'admin': 1});
+            if (typeof req.user.purchase !== 'undefined') {
+                res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'admin': 1, 'purchase':req.user.purchase});
+            } else {
+                res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'admin': 1});
+            }
         } else {
-            res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state});
+            if (typeof req.user.purchase !== 'undefined') {
+                res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'purchase':req.user.purchase});
+            } else {
+                res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state});
+            }
         }
     } else {
         res.redirect('login');
@@ -929,11 +937,11 @@ app.get('/admin', function(req, res) {
 });
 
 app.post('/do_purchase', function(req, reso) {
-    if (req.user.pass_final && req.user.billing && req.user.shipping && req.user.cc && req.user.purchase === 'undefined') {
-        var base_price = 45.00;
-        var shipping_cost = 4.99;
+    if (req.user.pass_final && req.user.billing && req.user.shipping && req.user.cc && typeof req.user.purchase === 'undefined') {
+        var base_price = config.price.base;
+        var shipping_cost = config.price.shipping;
         if (req.user.billing.expedite) {
-            shipping_cost= 19.95
+            shipping_cost= config.price.expedite;
         }
         total_amount = base_price + shipping_cost;
         names = req.user.billing.name.split(' ',2);
@@ -978,6 +986,7 @@ app.post('/do_purchase', function(req, reso) {
                                     if (typeof transaction_response['responseCode'][0] !== 'undefined') {
                                         if (transaction_response['responseCode'][0] == 1) {
                                             req.user.purchase = transaction_response;  
+                                            req.user.purchase_time = Date.now();
                                             rv.valid = 1;
                                             redis_client.set(req.user.email, JSON.stringify(req.user));
                                         } else {
@@ -1026,15 +1035,19 @@ app.get('/receipt', function(req, res) {
             from : 'info@caldrivers.com',
             to: 'support@caldrivers.com',
             subject: 'Purchase Complete! ' + req.user.email,
-            html: '<div>Send certificate to:</div><br /><div>' + req.user.shipping + '</div><div>Expedite: ' + req.user.billing.expedite + '</div>'
+            html: '<div>Send certificate to:</div><br /><div>' + req.user.shipping.name + '<br />' + req.user.shipping.addy1 + ' ' + req.user.shipping.addy2+ '<br />' + req.user.shipping.city + '<br />' + req.user.shipping.state + '<br />' + req.user.shipping.zip + '<br /></div><div>Expedite: ' + req.user.billing.expedite + '</div>'
         }
-        sendmail(mailOptions);
+        if (typeof req.user.receipt_sent == 'undefined') {
+            sendmail(mailOptions);
+            req.user.receipt_sent = 1;
+            redis_client.set(req.user.email, JSON.stringify(req.user));
+        }
         var cc = {};
         cc.auth_code = req.user.purchase['authCode'][0];
         cc.message = req.user.purchase['messages'][0]['message'][0]['description'][0];
         cc.type = req.user.purchase['accountType'][0];
         cc.account = req.user.purchase['accountNumber'][0];
-        res.render('receipt.html', { 'email': req.user.email,'billing':req.user.billing,'shipping':req.user.shipping,'cc':cc });
+        res.render('receipt.html', { 'email': req.user.email,'billing':req.user.billing,'shipping':req.user.shipping,'cc':cc,'price':config.price });
     } else {
         res.status(404);
     }
