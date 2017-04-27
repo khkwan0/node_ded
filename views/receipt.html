@@ -60,7 +60,7 @@
                                     <tr class="expedited"><td>Total</td><td id="expedited_shipping_cost">{{ price.base | float + price.expedite }}</td>
                                 {% else %}
                                     <tr class="standard"><td>Standard shipping and handling</td><td id="shipping_cost">{{ price.shipping }}</td>
-                                    <tr class="standard"><td>Total</td><td id="shipping_cost">{{ price.base | float + price.expedite }}</td>
+                                    <tr class="standard"><td>Total</td><td id="shipping_cost">{{ price.base | float + price.shipping }}</td>
                                 {% endif %}
                             </table>
                         </div>

@@ -39,6 +39,7 @@ lib_client = redis.createClient(
         });
 lib_client.select(3);
 lib_client.flushdb();
+lib_client.select(3);
 
 tweet_store = redis.createClient(
         {
@@ -720,7 +721,7 @@ app.get('/quiz/:unit', function(req, res) {
             });
         } catch(e) {
             console.log(e);
-            res.status(404).send('404');;
+            res.status(404).send();
         }
     } else {
         res.redirect('/login');
@@ -772,7 +773,7 @@ app.post('/setadmin', function(req, res) {
             }
         });
     } else {
-        res.sendStatus(404);
+        res.status(404).send();
     }
 });
 
@@ -780,13 +781,13 @@ app.post('/api/checkAnswers', function(req, res) {
     var answers = JSON.parse(req.body.answers);
     var unit = req.body.unit;
     quiz = [];
-    redis_client.get('quiz'+unit, function(err, data) {
+    lib_client.get('quiz'+unit, function(err, data) {
         if (err) {
-            res.status(404).send('404');
+            res.status(404).send();
         } else if (!data) {
             fs.readFile('lib/quiz'+unit+'.js', 'utf8', function(err, data) {
                 if (err) {
-                    res.status(404).send('404');
+                    res.status(404).send();
                 } else {
                     quiz = JSON.parse(data);
                     wrong = checkAnswers(answers, quiz);
@@ -795,7 +796,7 @@ app.post('/api/checkAnswers', function(req, res) {
                         passFinal(req, answers);
                     }
                     res.send(JSON.stringify(wrong));
-                    redis_client.set('quiz'+unit, data);
+                    lib_client.set('quiz'+unit, data);
                 }
             });
         } else {
@@ -814,7 +815,7 @@ app.get('/congrats', function(req, res) {
     if (typeof req.user !=='undefined' && typeof req.user.pass_final !== 'undefined' && req.user.pass_final) {
         res.render('congrats.html', {'email':req.user.email});
     } else {
-        res.status(404).send('404');
+        res.status(404).send();
     }
 });
 
@@ -822,7 +823,35 @@ app.get('/setpass',function(req, res) {
     if (req.user.email === config.superadmin.email) {
         req.user.pass_final = 1;
         redis_client.set(req.user.email, JSON.stringify(req.user));
-        res.status(200).send();
+        res.redirect('/status');
+    } else {
+        res.status(404).send();
+    }
+});
+
+app.get('/setadmin', function(req, res) {
+    if (req.user.email === config.superadmin.email) {
+        req.user.admin =1;
+        redis_client.set(req.user.email, JSON.stringify(req.user));
+        res.redirect('/status');
+    }
+});
+
+app.get('/rebuilduser', function(req, res) {
+    if (req.user.email === config.superadmin.email) {
+        redis_client.keys('*', function( err, keys) {
+            var userlist = [];
+            for (var idx in keys) {
+                if (keys[idx].indexOf('sess:')<0) {
+                    console.log(keys[idx]);
+                    userlist.push(keys[idx]);
+                }
+            }
+            user_list.set('users', JSON.stringify(userlist));
+            res.redirect('/status');
+        });
+    } else {
+        res.status(404).send();
     }
 });
 
@@ -854,9 +883,9 @@ app.get('/billing', function(req, res) {
         res.render('congrats.html', {'email':req.user.email});
     } else if (typeof req.user !== 'undefined' && req.user.pass_final!=='undefined' && req.user.pass_final) {
         shipping = req.user.shipping;
-        res.render('billing.html', {'email':req.user.email,'shipping':shipping});
+        res.render('billing.html', {'email':req.user.email,'shipping':shipping, 'price':config.price});
     } else {
-        res.status(404).send('404');
+        res.status(404).send();
     }
 });
 
@@ -889,9 +918,9 @@ app.get('/final_verify', function(req, res) {
         res.render('congrats.html',{'email':req.user.email});
     }
     if (typeof req.user !== 'undefined' && req.user.pass_final && req.user.billing && req.user.shipping && req.user.cc) {
-        res.render('final_verify.html', { 'email':req.user.email,'shipping':req.user.shipping,'billing':req.user.billing,'cc':req.user.cc});
+        res.render('final_verify.html', { 'email':req.user.email,'shipping':req.user.shipping,'billing':req.user.billing,'cc':req.user.cc,'price':config.price});
     } else {
-        res.status(404).send('Not found');
+        res.status(404).send();
     }
 });
 
@@ -932,7 +961,7 @@ app.get('/admin', function(req, res) {
             );
         });
     } else {
-        res.sendStatus(404);
+        res.status(404).send();
     }
 });
 
@@ -1049,7 +1078,7 @@ app.get('/receipt', function(req, res) {
         cc.account = req.user.purchase['accountNumber'][0];
         res.render('receipt.html', { 'email': req.user.email,'billing':req.user.billing,'shipping':req.user.shipping,'cc':cc,'price':config.price });
     } else {
-        res.status(404);
+        res.status(404).send();
     }
 });
 

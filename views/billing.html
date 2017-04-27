@@ -94,11 +94,11 @@
                         <h3>Invoice</h3>
                         <div class="table-responsive">
                             <table class="table">
-                                <tr><td>Exam review and certificate</td><td id="test_cost">45.99</td>
-                                <tr class="standard"><td>Standard shipping and handling</td><td id="shipping_cost">4.00</td>
-                                <tr class="expedited" style="display:none"><td>Expedited shipping and handling</td><td id="expedited_cost">19.95</td>
-                                <tr class="standard"><td>Total</td><td id="shipping_cost">49.99</td>
-                                <tr class="expedited" style="display:none"><td>Total</td><td id="expedited_shipping_cost">65.94</td>
+                                <tr><td>Exam review and certificate</td><td id="test_cost">{{ price.base }}</td>
+                                <tr class="standard"><td>Standard shipping and handling</td><td id="shipping_cost">{{ price.shipping }}</td>
+                                <tr class="expedited" style="display:none"><td>Expedited shipping and handling</td><td id="expedited_cost">{{ price.expedite }}</td>
+                                <tr class="standard"><td>Total</td><td id="shipping_cost">{{ price.base + price.shipping }}</td>
+                                <tr class="expedited" style="display:none"><td>Total</td><td id="expedited_shipping_cost">{{ price.base + price.expedite }}</td>
                             </table>
                         </div>
                         <h3 class="secondary">
