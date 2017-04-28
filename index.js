@@ -818,7 +818,7 @@ app.post('/api/checkAnswers', function(req, res) {
 app.get('/congrats', function(req, res) {
     if (typeof req.user !=='undefined' && typeof req.user.pass_final !== 'undefined' && req.user.pass_final) {
         if (typeof req.user.shipping !== 'undefined') {
-            res.render('congrats.html', {'email':req.user.email, 'shipping': req.user.shipping, 'billing':req.user.billing});
+            res.render('congrats.html', {'email':req.user.email, 'shipping': req.user.shipping});
         } else {
             res.render('congrats.html', {'email':req.user.email});
         }
