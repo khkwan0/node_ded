@@ -32,26 +32,26 @@ redis_client = redis.createClient(
         {
             'host': config.redis.host
         });
-redis_client.select(2);
+redis_client.select(config.redis_select.users);
 lib_client = redis.createClient(
         {
             'host': config.redis.host
         });
-lib_client.select(3);
+lib_client.select(config.redis_select.lib);
 lib_client.flushdb();
-lib_client.select(3);
+lib_client.select(config.redis_select.lib);
 
 tweet_store = redis.createClient(
         {
             'host': config.redis.host
         });
-tweet_store.select(4);
+tweet_store.select(config.redis_select.tweet);
 
 user_list = redis.createClient(
         {
             'host': config.redis.host
         });
-user_list.select(5);
+user_list.select(config.redis_select.user_list);
 
 var tweets = [];
 
@@ -74,7 +74,7 @@ app.use(session({
         store: new RedisStore({
             host: config.redis.host,
             port: 6379,
-            db: 2
+            db: config.redis_select.sess
         }),
         resave: false,
         saveUninitialized: false,
@@ -1107,7 +1107,7 @@ Twitter.stream('statuses/filter', {
 
 Twitter.on('data', function(buf) {
     tweet = JSON.parse(buf.toString());
-    console.log('data' + new Date().getTime());
+    console.log('Tweet data:' + Date.now());
     if (tweet.user.id_str === config.twitter.ca_dmv_id && !tweet.in_reply_to_user_id) {
         d = new Date(parseInt(tweet.timestamp_ms));
         tweet_info = {
@@ -1116,7 +1116,6 @@ Twitter.on('data', function(buf) {
         }
         console.log(tweet_info);
         try {
-            console.log('tweets: ' + JSON.stringify(tweets));
             tweets.unshift(tweet_info);
         } catch(e) {
             console.log(e);
