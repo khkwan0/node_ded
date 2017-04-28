@@ -570,13 +570,13 @@ app.get('/status', function(req, res) {
     if (req.user) {
         if (req.user.admin) {
             if (typeof req.user.purchase !== 'undefined') {
-                res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'admin': 1, 'purchase':req.user.purchase});
+                res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'admin': 1, 'graduated': req.user.pass_final, 'purchase':req.user.purchase});
             } else {
-                res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'admin': 1});
+                res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'admin': 1, 'graduated': req.user.pass_final});
             }
         } else {
             if (typeof req.user.purchase !== 'undefined') {
-                res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'purchase':req.user.purchase});
+                res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'graduated': req.user.pass_final, 'purchase':req.user.purchase});
             } else {
                 if (typeof req.user.pass_final !== 'undefined') {
                     res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'graduated':req.user.pass_final});
