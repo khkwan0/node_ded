@@ -52,13 +52,21 @@
                                 <div class="form-group row">
                                     <label for="example-text-input" class="col-xs-4 col-form-label">Name</label>
                                      <div class="col-xs-6">
-                                        <input class="form-control" type="text" value="{{ shipping.name }}"id="name_input">
+                                        {% if billing %}
+                                            <input class="form-control" type="text" value="{{ billing.name }}"id="name_input">
+                                        {% else %}
+                                            <input class="form-control" type="text" value="{{ shipping.name }}"id="name_input">
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="example-text-input" class="col-xs-4 col-form-label">Address</label>
                                      <div class="col-xs-6">
-                                        <input class="form-control" type="text" value="{{ shipping.addy1 }}" id="addy1_input">
+                                        {% if billing %}
+                                            <input class="form-control" type="text" value="{{ billing.addy1 }}" id="addy1_input">
+                                        {% else %}
+                                            <input class="form-control" type="text" value="{{ shipping.addy1 }}" id="addy1_input">
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -70,19 +78,31 @@
                                 <div class="form-group row">
                                     <label for="example-text-input" class="col-xs-4 col-form-label">City</label>
                                      <div class="col-xs-6">
-                                        <input class="form-control" type="text" value="{{ shipping.city }}" id="city_input">
+                                        {% if billing %}
+                                        <input class="form-control" type="text" value="{{ billing.city }}" id="city_input">
+                                        {% else %}
+                                            <input class="form-control" type="text" value="{{ shipping.city }}" id="city_input">
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="example-text-input" class="col-xs-4 col-form-label">State</label>
                                      <div class="col-xs-6">
-                                        <input class="form-control" type="text" value="{{ shipping.state }}" id="state_input">
+                                        {% if billing %}
+                                            <input class="form-control" type="text" value="{{ billing.state }}" id="state_input">
+                                        {% else %}
+                                            <input class="form-control" type="text" value="{{ shipping.state }}" id="state_input">
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label for="example-text-input" class="col-xs-4 col-form-label">Zip</label>
                                      <div class="col-xs-6">
-                                        <input class="form-control" type="text" value="{{ shipping.zip }}" id="zip_input">
+                                        {% if billing %}
+                                            <input class="form-control" type="text" value="{{ billing.zip }}" id="zip_input">
+                                        {% else %}
+                                            <input class="form-control" type="text" value="{{ shipping.zip }}" id="zip_input">
+                                        {% endif %}
                                     </div>
                                 </div>
                             </form>

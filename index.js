@@ -578,7 +578,11 @@ app.get('/status', function(req, res) {
             if (typeof req.user.purchase !== 'undefined') {
                 res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'purchase':req.user.purchase});
             } else {
-                res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state});
+                if (typeof req.user.pass_final !== 'undefined') {
+                    res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state, 'graduated':req.user.pass_final});
+                } else {
+                    res.render('status.html', {'email':req.user.email, 'state':req.user.reveal_state});
+                }
             }
         }
     } else {
@@ -813,7 +817,11 @@ app.post('/api/checkAnswers', function(req, res) {
 
 app.get('/congrats', function(req, res) {
     if (typeof req.user !=='undefined' && typeof req.user.pass_final !== 'undefined' && req.user.pass_final) {
-        res.render('congrats.html', {'email':req.user.email});
+        if (typeof req.user.shipping !== 'undefined') {
+            res.render('congrats.html', {'email':req.user.email, 'shipping': req.user.shipping, 'billing':req.user.billing});
+        } else {
+            res.render('congrats.html', {'email':req.user.email});
+        }
     } else {
         res.status(404).send();
     }
@@ -883,7 +891,11 @@ app.get('/billing', function(req, res) {
         res.render('congrats.html', {'email':req.user.email});
     } else if (typeof req.user !== 'undefined' && req.user.pass_final!=='undefined' && req.user.pass_final) {
         shipping = req.user.shipping;
-        res.render('billing.html', {'email':req.user.email,'shipping':shipping, 'price':config.price});
+        if (typeof req.user.billing !== 'undefined') {
+            res.render('billing.html', {'email':req.user.email,'shipping':shipping, 'price':config.price, 'billing':req.user.billing});
+        } else {
+            res.render('billing.html', {'email':req.user.email,'shipping':shipping, 'price':config.price});
+        }
     } else {
         res.status(404).send();
     }

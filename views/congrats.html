@@ -114,25 +114,41 @@
                         <div class="form-group row">
                             <label for="example-text-input" class="col-xs-4 col-form-label">Name</label>
                              <div class="col-xs-6">
-                                <input class="form-control" type="text" id="name_input">
+                                {% if shipping %}
+                                    <input class="form-control" type="text" id="name_input" value="{{ shipping.name }}" />
+                                {% else %}
+                                    <input class="form-control" type="text" id="name_input" />
+                                {% endif %}
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="example-text-input" class="col-xs-4 col-form-label">Address</label>
                              <div class="col-xs-6">
-                                <input class="form-control" type="text" id="addy1_input">
+                                {% if shipping %}
+                                    <input class="form-control" type="text" id="addy1_input" value="{{ shipping.addy1 }}" />
+                                {% else %}
+                                    <input class="form-control" type="text" id="addy1_input">
+                                {% endif %}
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="example-text-input" class="col-xs-4 col-form-label">Address  2(optional)</label>
+                            <label for="example-text-input" class="col-xs-4 col-form-label">Address 2(optional)</label>
                              <div class="col-xs-6">
-                                <input class="form-control" type="text" id="addy2_input">
+                                {% if shipping %}
+                                    <input class="form-control" type="text" id="addy2_input" value="{{ shipping.add2 }}" />
+                                {% else %}
+                                    <input class="form-control" type="text" id="addy2_input" />
+                                {% endif %}
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="example-text-input" class="col-xs-4 col-form-label">City</label>
                              <div class="col-xs-6">
-                                <input class="form-control" type="text" id="city_input">
+                                {% if shipping %}
+                                    <input class="form-control" type="text" id="city_input" value="{{ shipping.city }}">
+                                {% else %}
+                                    <input class="form-control" type="text" id="city_input">
+                                {% endif %}
                             </div>
                         </div>
                         <div class="form-group row">
@@ -144,7 +160,11 @@
                         <div class="form-group row">
                             <label for="example-text-input" class="col-xs-4 col-form-label">Zip</label>
                              <div class="col-xs-6">
-                                <input class="form-control" type="text" id="zip_input">
+                                {% if shipping %}
+                                    <input class="form-control" type="text" id="zip_input" value="{{ shipping.zip }}" />
+                                {% else %}
+                                    <input class="form-control" type="text" id="zip_input">
+                                {% endif %}
                             </div>
                         </div>
                     </div>
