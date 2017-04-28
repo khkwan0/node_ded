@@ -27,6 +27,7 @@ var TwitterStream = require('twitter-stream-api');
 var sendMail = require('sendmail')();
 var async = require('async');
 var moment = require('moment-timezone');
+var favicon = require('serve-favicon');
 
 redis_client = redis.createClient(
         {
@@ -69,6 +70,7 @@ tweet_store.get('ca_dmv_tweets', function(err, data) {
     }
 });
 
+app.use(favicon(__dirname + '/favicon.ico'));
 app.use(cookieParser());
 app.use(session({
         store: new RedisStore({
