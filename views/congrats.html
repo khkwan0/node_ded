@@ -10,6 +10,7 @@
         <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/assets/reveal/css/reveal.css" />
         <link rel="stylesheet" type="text/css" href="/assets/reveal/css/theme/moon.css" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/jquery-ui.min.css" />
     </head>
     <body>
         <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -127,7 +128,7 @@
                                 {% if shipping %}
                                     <input class="form-control" type="text" id="addy1_input" value="{{ shipping.addy1 }}" />
                                 {% else %}
-                                    <input class="form-control" type="text" id="addy1_input">
+                                    <input class="form-control" type="text" id="addy1_input" />
                                 {% endif %}
                             </div>
                         </div>
@@ -135,7 +136,7 @@
                             <label for="example-text-input" class="col-xs-4 col-form-label">Address 2(optional)</label>
                              <div class="col-xs-6">
                                 {% if shipping %}
-                                    <input class="form-control" type="text" id="addy2_input" value="{{ shipping.add2 }}" />
+                                    <input class="form-control" type="text" id="addy2_input" value="{{ shipping.addy2 }}" />
                                 {% else %}
                                     <input class="form-control" type="text" id="addy2_input" />
                                 {% endif %}
@@ -145,16 +146,16 @@
                             <label for="example-text-input" class="col-xs-4 col-form-label">City</label>
                              <div class="col-xs-6">
                                 {% if shipping %}
-                                    <input class="form-control" type="text" id="city_input" value="{{ shipping.city }}">
+                                    <input class="form-control" type="text" id="city_input" value="{{ shipping.city }}" />
                                 {% else %}
-                                    <input class="form-control" type="text" id="city_input">
+                                    <input class="form-control" type="text" id="city_input" />
                                 {% endif %}
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="example-text-input" class="col-xs-4 col-form-label">State</label>
                              <div class="col-xs-6">
-                                <input class="form-control" type="text" value="California" id="state_input">
+                                <input class="form-control" type="text" value="California" id="state_input" />
                             </div>
                         </div>
                         <div class="form-group row">
@@ -163,7 +164,27 @@
                                 {% if shipping %}
                                     <input class="form-control" type="text" id="zip_input" value="{{ shipping.zip }}" />
                                 {% else %}
-                                    <input class="form-control" type="text" id="zip_input">
+                                    <input class="form-control" type="text" id="zip_input" />
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="example-text-input" class="col-xs-4 col-form-label">Phone (required)</label>
+                             <div class="col-xs-6">
+                                {% if shipping %}
+                                    <input class="form-control" type="text" id="phone_input" value="{{ shipping.phone}}" />
+                                {% else %}
+                                    <input class="form-control" type="text" id="phone_input" />
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="example-text-input" class="col-xs-4 col-form-label">Birthdate</label>
+                             <div class="col-xs-6">
+                                {% if shipping %}
+                                    <input class="form-control" type="text" id="bday_input" value="{{ shipping.bday}}" readonly />
+                                {% else %}
+                                    <input class="form-control" type="text" id="bday_input" readonly />
                                 {% endif %}
                             </div>
                         </div>
@@ -178,6 +199,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="/assets/bootstrap/js/bootstrap.min.js"></script>
         <script src="/assets/reveal/js/reveal.js"></script>
+        <script src="/assets/js/jquery-ui.js"></script>
         <script>
             Reveal.initialize();
         </script>
@@ -190,8 +212,10 @@
                 shipping.city = $('#city_input').val();
                 shipping.state = $('#state_input').val();
                 shipping.zip = $('#zip_input').val();
+                shipping.phone = $('#phone_input').val();
+                shipping.bday =$('#bday_input').val();
 
-                if (!shipping.name || !shipping.addy1 || !shipping.city || !shipping.state || !shipping.zip) {
+                if (!shipping.name || !shipping.addy1 || !shipping.city || !shipping.state || !shipping.zip || !shipping.phone || !shipping.bday) {
                     $('#error_div').text('Form not complete.');
                     console.log(shipping);
                     $('#error_div').show(); 
@@ -208,6 +232,13 @@
                     );
                 }
             };
+        </script>
+        <script>
+            $('#bday_input').datepicker({
+                changeMonth: true,
+                changeYear: true,
+                maxDate: "-14Y" 
+            });
         </script>
         <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

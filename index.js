@@ -746,7 +746,7 @@ app.post('/getuser', function(req, res) {
     if (req.user.admin == 1) {
         try {
             redis_client.get(req.body.email, function(err, data) {
-                if (err) ress.send(err);
+                if (err) res.send(err);
                 res.send(data);
             });
         } catch(e) {
@@ -867,7 +867,7 @@ app.post('/save_shipping', function(req, res) {
     try {
         rv = {};
         req.user.shipping = JSON.parse(req.body.shipping);
-        if (typeof req.user.shipping.addy2 === 'undefined') {
+        if (typeof req.user.shipping.addy2 == 'undefined') {
             req.user.shipping.addy2 = '';
         }
         redis_client.set(req.user.email, JSON.stringify(req.user), function(err) {
@@ -888,7 +888,7 @@ app.post('/save_shipping', function(req, res) {
 
 app.get('/billing', function(req, res) {
     if (typeof req.user !== 'undefined' && typeof req.user.purchase !== 'undefined') {
-        res.render('congrats.html', {'email':req.user.email});
+        res.redirect('/congrats');
     } else if (typeof req.user !== 'undefined' && req.user.pass_final!=='undefined' && req.user.pass_final) {
         shipping = req.user.shipping;
         if (typeof req.user.billing !== 'undefined') {
@@ -966,7 +966,6 @@ app.get('/admin', function(req, res) {
                     if (err) {
                         console.log(err)
                     } else {
-                        console.log(user_data);
                         res.render('admin.html', {'user_data': user_data,'email':req.user.email});
                     }
                 }
@@ -1076,7 +1075,7 @@ app.get('/receipt', function(req, res) {
             from : 'info@caldrivers.com',
             to: 'support@caldrivers.com',
             subject: 'Purchase Complete! ' + req.user.email,
-            html: '<div>Send certificate to:</div><br /><div>' + req.user.shipping.name + '<br />' + req.user.shipping.addy1 + ' ' + req.user.shipping.addy2+ '<br />' + req.user.shipping.city + '<br />' + req.user.shipping.state + '<br />' + req.user.shipping.zip + '<br /></div><div>Expedite: ' + req.user.billing.expedite + '</div>'
+            html: '<div>Send certificate to:</div><br /><div>' + req.user.shipping.name + '<br />' + req.user.shipping.addy1 + ' ' + req.user.shipping.addy2+ '<br />' + req.user.shipping.city + '<br />' + req.user.shipping.state + '<br />' + req.user.shipping.zip + '<br />' + req.user.shipping.phone + '<br />' + req.user.shipping.bday + '<br /></div><div>Expedite: ' + req.user.billing.expedite + '</div>'
         }
         if (typeof req.user.receipt_sent == 'undefined') {
             sendmail(mailOptions);
