@@ -1031,6 +1031,7 @@ app.post('/do_purchase', function(req, reso) {
                                             req.user.purchase = transaction_response;  
                                             req.user.purchase_time = Date.now();
                                             rv.valid = 1;
+                                            req.user.cc.cc_no = req.user.cc.last_four;
                                             redis_client.set(req.user.email, JSON.stringify(req.user));
                                         } else {
                                             rv.error = transaction_response['errors'][0]['error'][0]['errorText'][0];
