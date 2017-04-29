@@ -28,6 +28,7 @@ var sendMail = require('sendmail')();
 var async = require('async');
 var moment = require('moment-timezone');
 var favicon = require('serve-favicon');
+var request = require('request');
 
 redis_client = redis.createClient(
         {
@@ -1094,6 +1095,78 @@ app.get('/receipt', function(req, res) {
         res.status(404).send();
     }
 });
+
+app.get('/webhook', function(req, res) {
+    if (req.query['hub.mode'] === 'subscribe' &&
+        req.query['hub.verify_token'] === config.facebook.messengerVerifyToken) {
+        console.log("Validating webhook");
+        res.status(200).send(req.query['hub.challenge']);
+    } else {
+        console.error("Failed validation. Make sure the validation tokens match.");
+        res.sendStatus(403);          
+    }  
+});
+
+app.post('/webhook', function(req, res) {
+    var data = req.body;
+    data.entry.forEach(function(entry) {
+        var pageID = entry.id;
+        var timeOfEvent = entry.time;
+        entry.messaging.forEach(function(event) {
+            if (event.message) {
+                receivedMessage(event);
+            } else {
+//                console.log('Webhook received unknown event: ', event);
+            }
+        });
+    });
+    res.status(200).send();
+});
+
+function receivedMessage(event) {
+    request(
+        {
+            uri: 'https://graph.facebook.com/v2.6/'+event.sender.id,
+            qs: { access_token: config.facebook.accessToken },
+            method: 'GET'
+        },
+        function(error, response, body) {
+            body = JSON.parse(body);
+            var first_name = body.first_name;
+            var responseData = {
+                recipient: {
+                    id: event.sender.id
+                },
+                message: {
+                    text: 'howdy '+first_name+'!'
+                }
+            };
+            callSendAPI(responseData);
+        }
+    );
+}
+
+function callSendAPI(messageData) {
+	request({
+		uri: 'https://graph.facebook.com/v2.6/me/messages',
+		qs: { access_token: 'EAAX3A0jT4BABALurG4WnyLZBZArZAAcWB1EDKTQLx5yRBTn6utQVi3QWv7jioJCh9bYRqil0tZAcqakZBGWk2dpVRDIIrtlfnJ5USiO0FozKX1LQJhiOUX4YrvheaDAop7LzxWBbOiXmgxmzDWSdJ1HPgArFUTYrDFi3LNkXoHQZDZD'},
+		method: 'POST',
+		json: messageData
+	}, function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+			var recipientId = body.recipient_id;
+			var messageId = body.message_id;
+			console.log("Successfully sent generic message with id %s to recipient %s", 
+			messageId, recipientId);
+		} else {
+        /*
+			console.error("Unable to send message.");
+			console.error(response);
+			console.error(error);
+           */
+		}
+	});  
+}
 
 var twitter_keys = {
     consumer_key: config.twitter.consumerKey,
